@@ -15,6 +15,7 @@ let nowGarage = '';
 let isSpawnLoading = false;
 let activeSpawnPlate = '';
 let spawnProgressInterval = null;
+let activeCardPlate = '';
 
 // ============================================
 // HELPER FUNCTIONS
@@ -154,6 +155,40 @@ function updateVehicleCount(count) {
     }
 }
 
+function getPlateFromTrigger(element) {
+    return $(element).closest('.car_box').attr('data-plate') || $(element).attr('data-plate') || activeCardPlate || '';
+}
+
+function updateDetailPanel(cardElement) {
+    if (!cardElement) return;
+    const card = cardElement instanceof Element ? cardElement : cardElement[0];
+    if (!card) return;
+
+    activeCardPlate = card.getAttribute('data-plate') || '';
+    document.querySelectorAll('.car_box').forEach((node) => node.classList.remove('active'));
+    card.classList.add('active');
+
+    const name = card.getAttribute('data-vehiclename') || 'UNKNOWN';
+    const plate = card.getAttribute('data-plate') || 'N/A';
+    const fuel = Number(card.getAttribute('data-fuel') || 0);
+    const speed = Number(card.getAttribute('data-speed') || 0);
+    const weight = Number(card.getAttribute('data-weight') || 0);
+    const type = card.getAttribute('data-class') || 'Unknown';
+    const img = card.getAttribute('data-img') || 'unknow';
+
+    $('#detail-name').text(name.toUpperCase());
+    $('#detail-plate').text(plate);
+    $('#detail-fuel-val').text(`${fuel}%`);
+    $('#detail-fuel-bar').css('width', `${Math.min(100, Math.max(0, fuel))}%`);
+    $('#detail-speed').text(`${speed}km`);
+    $('#detail-weight').text(`${weight}kg`);
+    $('#detail-class').text(type);
+    $('#detail-image').attr('src', `img/${img}.png`);
+    $('#detail-edit').attr('data-plate-rename', plate).attr('data-vehiclename', name);
+    $('#detail-fav').attr('data-plate-fav', plate).toggleClass('favorite', card.classList.contains('favorite'));
+    $('#detail-drive, #detail-trunk').attr('data-plate', plate);
+}
+
 // ============================================
 // EVENT LISTENERS - jQuery
 // ============================================
@@ -182,7 +217,7 @@ $('body').on('click', '.vehicle-detail2', function (e) {
     if (isSpawnLoading || !canClick) return;
     
     canClick = false;
-    const plate = $(this).closest('.car_box').attr('data-plate');
+    const plate = getPlateFromTrigger(this);
     
     // Add click animation
     $(this).css('transform', 'scale(0.9)');
@@ -208,7 +243,7 @@ $('body').on('click', '.spawn', function (e) {
     if (isSpawnLoading || !canClick) return;
     
     canClick = false;
-    const plate = $(this).closest('.car_box').attr('data-plate');
+    const plate = getPlateFromTrigger(this);
     
     // Add click animation
     $(this).css('transform', 'scale(0.95)');
@@ -351,6 +386,10 @@ $('body').on('click', '.category', function () {
     }
 });
 
+$('body').on('click', '.car_box[data-plate]', function () {
+    updateDetailPanel(this);
+});
+
 // ============================================
 // KEYBOARD EVENTS
 // ============================================
@@ -426,15 +465,17 @@ function syncVehicleData(eventData) {
     let poundCount = 0;
     
     // Update title
-    document.getElementById('title-garage').textContent = nowGarage.toUpperCase();
+    const titleGarage = document.getElementById('title-garage');
+    if (titleGarage) {
+        titleGarage.innerHTML = `<span>${nowGarage.toUpperCase()}</span> GARAGE`;
+    }
     
     // Build trunk button HTML
     const trunkHTML = nowGarage !== 'pound' ? `
-        <div class="button_trunk vehicle-detail2">
+        <div class="button_trunk vehicle-detail2" data-plate="{{PLATE}}">
             <iconify-icon icon="solar:bag-4-bold"></iconify-icon>
-            <span class="btn-tooltip">ท้ายรถ</span>
         </div>
-    ` : '';
+    ` : '<div class="button_trunk"></div>';
 
     
     // Process each vehicle
@@ -483,17 +524,6 @@ function syncVehicleData(eventData) {
             order = 1;
         }
         
-        const renameHTML = nowGarage !== 'pound' ? `
-            <div class="button_rename edit" data-plate-rename="${vehicle.plate}" data-vehiclename="${vehicle.vehiclename}">
-                <iconify-icon icon="solar:pen-bold"></iconify-icon>
-                <span class="btn-tooltip">เปลี่ยนชื่อ</span>
-            </div>
-        ` : '';
-
-        // Calculate stat bar widths
-        const engineWidth = Math.min(100, Math.max(0, engine));
-        const fuelWidth = Math.min(100, Math.max(0, fuel));
-        
         // Create vehicle card HTML
         const cardHTML = `
             <div class="car_box ${nowFav} ${classMenu}" 
@@ -501,14 +531,15 @@ function syncVehicleData(eventData) {
                  data-fav="${nowFav}" 
                  data-plate="${vehicle.plate}" 
                  data-vehiclename="${vehicle.vehiclename}" 
-                 data-fuel="${fuel}" 
-                 data-engine="${engine}"
-                 data-speed="${vehicle.maxspeed || 0}" 
-                 data-acc="${vehicle.maxacc || 0}" 
-                 data-break="${vehicle.maxbreak || 0}" 
-                 data-weight="${vehicle.weight || 0}">
-                
-                <div class="card-glow"></div>
+                  data-fuel="${fuel}" 
+                  data-engine="${engine}"
+                  data-speed="${vehicle.maxspeed || 0}" 
+                  data-acc="${vehicle.maxacc || 0}" 
+                  data-break="${vehicle.maxbreak || 0}" 
+                 data-weight="${vehicle.weight || 0}"
+                 data-class="${vehicle.class || 'Supersport'}"
+                 data-img="${vehicle.img}">
+
                 <div class="spawn-progress-inline">
                     <div class="spawn-progress-loader" aria-hidden="true">
                         <span></span><span></span><span></span><span></span><span></span><span></span>
@@ -517,63 +548,26 @@ function syncVehicleData(eventData) {
                     <div class="spawn-progress-text">0%</div>
                 </div>
                 
-                <div class="assist_pound">
-                    <div class="pound-content">
-                        <iconify-icon icon="solar:shield-warning-bold"></iconify-icon>
-                        <p>ยานพาหนะนี้อยู่ใน ${textNotAction.toUpperCase()}</p>
+                <div class="assist_pound"></div>
+                <div class="car_name">
+                    <h3>${vehicle.vehiclename}</h3>
+                    <div class="car_tags">
+                        <span class="tag plate">${vehicle.plate}</span>
                     </div>
                 </div>
-                
-                <div class="car_left">
-                    <div class="car_img">
-                        <img src="img/${vehicle.img}.png" alt="${vehicle.vehiclename}" onerror="this.src='img/unknow.png'">
-                        <div class="img-overlay"></div>
-                    </div>
+                <div class="car_img">
+                    <img src="img/${vehicle.img}.png" alt="${vehicle.vehiclename}" onerror="this.src='img/unknow.png'">
                 </div>
-                
-                <div class="car_center">
-                    <div class="car_name">
-                        <h3>${vehicle.vehiclename}</h3>
-                        <div class="car_tags">
-                            <span class="tag plate">${vehicle.plate}</span>
-                            <span class="tag class">${vehicle.class || 'UNKNOWN'}</span>
-                        </div>
+                <div class="car_console">
+                    <div class="button_spawn spawn" data-plate="${vehicle.plate}">
+                        <iconify-icon icon="solar:steering-wheel-bold"></iconify-icon>
+                        <span>Select</span>
                     </div>
-                    <div class="car_health_list">
-                        <div class="car_stat">
-                            <span class="stat-icon engine-icon">
-                                <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
-                            </span>
-                            <div class="stat-bar">
-                                <div class="stat-fill engine" style="width: ${engineWidth}%"></div>
-                            </div>
-                            <span class="stat-value">${engine}</span>
-                        </div>
-                        <div class="car_stat">
-                            <span class="stat-icon fuel-icon">
-                                <svg viewBox="0 0 24 24"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5z"/></svg>
-                            </span>
-                            <div class="stat-bar">
-                                <div class="stat-fill fuel" style="width: ${fuelWidth}%"></div>
-                            </div>
-                            <span class="stat-value">${fuel}</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="car_right">
                     <div class="assist_favorite_btn fav-btn" data-plate-fav="${vehicle.plate}">
                         <iconify-icon icon="solar:star-bold"></iconify-icon>
                     </div>
-                    <div class="car_console">
-                        ${trunkHTML}
-                        ${renameHTML}
-                        <div class="button_spawn spawn">
-                            <iconify-icon icon="solar:play-circle-bold"></iconify-icon>
-                            <span>เบิกยานพาหนะ</span>
-                        </div>
-                    </div>
                 </div>
+                <div class="car_right">${trunkHTML.replace('{{PLATE}}', vehicle.plate)}</div>
             </div>
         `;
         
@@ -622,6 +616,11 @@ function syncVehicleData(eventData) {
     } else {
         $('.car_box.pound').removeClass('car_inpound');
         $('.car_box.garage').addClass('car_inpound').css('order', '3');
+    }
+
+    const firstCard = document.querySelector('.car_box[data-plate]');
+    if (firstCard) {
+        updateDetailPanel(firstCard);
     }
 }
 
