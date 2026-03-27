@@ -1,102 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurora Garage</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurora Garage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/app.css" />
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 </head>
 <body>
-    <div class="assist_garage">
-        <div class="container_garage">
-            <section class="left-panel">
-                <div class="topbar">
-                    <div class="brand-wrap">
-                        <div class="logo-icon"><iconify-icon icon="solar:box-bold"></iconify-icon></div>
-                        <div class="header_text">
-                            <h1 id="title-garage"><span>AURORA</span> GARAGE</h1>
-                            <p class="garage_subtitle">Manage your vehicles and deploy instantly.</p>
-                        </div>
-                    </div>
-                    <div class="top-actions">
-                        <div class="box_search">
-                            <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
-                            <input type="text" placeholder="Search car..." id="search">
-                        </div>
-                        <button class="top-icon-btn category select_category" data-menu="all"><iconify-icon icon="solar:widget-bold"></iconify-icon></button>
-                        <button class="top-icon-btn category" data-menu="garage"><iconify-icon icon="solar:garage-bold"></iconify-icon></button>
-                        <button class="top-icon-btn category" data-menu="pound"><iconify-icon icon="solar:lock-keyhole-bold"></iconify-icon></button>
-                        <button class="top-icon-btn exit-area" data-plate-spawn=""><iconify-icon icon="solar:close-square-linear"></iconify-icon></button>
-                    </div>
-                </div>
+  <div id="root"></div>
 
-                <div class="assist_content"></div>
-            </section>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-            <aside class="detail-panel add-detail">
-                <div class="detail-head">
-                    <div>
-                        <p>Car Name</p>
-                        <h2 id="detail-name">PORSCHE GT4 RS</h2>
-                    </div>
-                    <div class="detail-controls">
-                        <button class="detail-icon-btn edit" id="detail-edit"><iconify-icon icon="solar:pen-bold"></iconify-icon></button>
-                        <button class="detail-icon-btn fav-btn" id="detail-fav"><iconify-icon icon="solar:star-bold"></iconify-icon></button>
-                    </div>
-                </div>
-
-                <div class="detail-image-wrap">
-                    <img id="detail-image" src="./img/sultan2.png" alt="vehicle preview">
-                </div>
-
-                <div class="detail-plate" id="detail-plate">JJ1281G1</div>
-
-                <div class="detail-metrics">
-                    <div class="fuel-row">
-                        <div class="metric-icon"><iconify-icon icon="solar:fuel-bold"></iconify-icon></div>
-                        <div class="metric-body">
-                            <span>Fuel</span>
-                            <strong id="detail-fuel-val">100%</strong>
-                            <div class="fuel-bar"><div id="detail-fuel-bar"></div></div>
-                        </div>
-                    </div>
-                    <div class="metric-row">
-                        <div class="metric-icon"><iconify-icon icon="solar:bag-4-bold"></iconify-icon></div>
-                        <span>Kofferraum Lagerplatz</span>
-                        <strong id="detail-weight">50kg</strong>
-                    </div>
-                    <div class="metric-row">
-                        <div class="metric-icon"><iconify-icon icon="solar:speedometer-bold"></iconify-icon></div>
-                        <span>Top Speed Max Km/H</span>
-                        <strong id="detail-speed">450km</strong>
-                    </div>
-                    <div class="metric-row">
-                        <div class="metric-icon"><iconify-icon icon="solar:box-bold"></iconify-icon></div>
-                        <span>Car Type</span>
-                        <strong id="detail-class">Supersport</strong>
-                    </div>
-                </div>
-
-                <div class="detail-bottom-actions">
-                    <button class="detail-action vehicle-detail2" id="detail-trunk"><iconify-icon icon="solar:bag-4-bold"></iconify-icon> Tanken</button>
-                    <button class="detail-action"><iconify-icon icon="solar:archive-bold"></iconify-icon> Kofferraum</button>
-                </div>
-                <button class="detail-drive spawn" id="detail-drive"><iconify-icon icon="solar:steering-wheel-bold"></iconify-icon> Drive Car</button>
-            </aside>
-        </div>
-    </div>
-
-    <div class="display-input">
-        <div class="rename-card">
-            <div class="rename-title">ระบบเปลี่ยนชื่อยานพาหนะ</div>
-            <input id="name-input" type="text" maxlength="30" placeholder="ชื่อที่คุณต้องการเปลี่ยน">
-            <button class="submit-btn">บันทึก</button>
-        </div>
-    </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="iconify-icon.min.js"></script>
-    <script src="main.js"></script>
+  <script type="text/babel" src="components/TopBar.jsx"></script>
+  <script type="text/babel" src="components/CarCard.jsx"></script>
+  <script type="text/babel" src="components/CarList.jsx"></script>
+  <script type="text/babel" src="components/FuelBar.jsx"></script>
+  <script type="text/babel" src="components/StatsSection.jsx"></script>
+  <script type="text/babel" src="components/ActionButtons.jsx"></script>
+  <script type="text/babel" src="components/DetailPanel.jsx"></script>
+  <script type="text/babel" src="App.jsx"></script>
 </body>
 </html>
