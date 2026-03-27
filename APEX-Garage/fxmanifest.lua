@@ -8,16 +8,14 @@ version '1.0.0'
 lua54 'yes'
 
 files {
-	'ui/ui.html',
-	'ui/style.css',
-	'ui/main.js',
-	'ui/img/*.png',
-	'ui/*.ttf',
-	'ui/iconify-icon.min.js'
+	'web/index.html',
+	'web/styles.css',
+	'web/script.js',
+	'web/img/*.png'
 }
 
 ui_page {
-	'ui/ui.html'
+	'web/index.html'
 }
 
 server_scripts {

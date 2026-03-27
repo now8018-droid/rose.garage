@@ -390,3 +390,31 @@ body {
 .actions button:last-child {
   grid-column: span 2;
 }
+
+body {
+  overflow: hidden;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.car-card.is-selected {
+  border-color: rgba(86, 222, 255, 0.62);
+  box-shadow: 0 0 16px rgba(0, 208, 255, 0.24);
+}
+
+.car-card.is-disabled {
+  opacity: 0.4;
+}
+
+.star {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}

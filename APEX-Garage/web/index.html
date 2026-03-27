@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FiveM Garage UI Clone</title>
+    <title>APEX Garage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -11,84 +11,74 @@
   </head>
   <body>
     <div class="bg-noise"></div>
-    <main class="garage-shell">
+    <main class="garage-shell" id="garageShell" style="display: none;">
       <section class="panel panel-left">
         <header class="panel-header">
           <div class="logo-wrap">
             <span class="pill">● GARAGE</span>
-            <h1><span>TRACER</span>REPLAY</h1>
+            <h1><span id="garageTitle">GARAGE</span> MANAGER</h1>
           </div>
-          <p class="garage-desc">Some short information about the Garage<br />discord.gg/replaystudios</p>
-          <button class="close-btn">CLOSE ✕</button>
+          <p class="garage-desc">จัดการรถทั้งหมดของคุณ</p>
+          <button class="close-btn" id="closeBtn">CLOSE ✕</button>
         </header>
 
         <div class="toolbar">
           <div class="toolbar-icons">
-            <button class="icon-btn">⌂</button>
-            <button class="icon-btn active">👤</button>
+            <button class="icon-btn active category-btn" data-menu="all">ALL</button>
           </div>
           <div class="search-wrap">
-            <input type="text" value="Search car..." aria-label="search" readonly />
+            <input id="searchInput" type="text" placeholder="Search car..." aria-label="search" />
             <span>⌕</span>
           </div>
           <div class="toggle-group">
-            <button class="toggle active">🅿 Ausgeparkt</button>
-            <button class="toggle">🅿 Geparkt</button>
+            <button class="toggle active category-btn" data-menu="garage">Garage</button>
+            <button class="toggle category-btn" data-menu="pound">Pound</button>
           </div>
-          <button class="icon-btn star-head">☆</button>
+          <button class="icon-btn star-head" id="favoriteFilterBtn">☆</button>
         </div>
 
         <section class="car-grid" id="carGrid"></section>
       </section>
 
-      <section class="panel panel-right">
+      <section class="panel panel-right" id="detailPanel">
         <div class="pill">● Selected Car ●</div>
-        <h2>Audi RS6 Abt /</h2>
+        <h2 id="detailName">No Vehicle</h2>
 
         <div class="hero-car">
-          <button class="star-corner">☆</button>
-          <img src="https://i.imgur.com/Fg7dQLe.png" alt="Audi RS6" />
+          <button class="star-corner" id="detailFavoriteBtn">☆</button>
+          <img id="detailImage" src="img/cars.png" alt="vehicle" />
         </div>
 
-        <div class="plate">J1281G1</div>
+        <div class="plate" id="detailPlate">-</div>
         <div class="owner-row">
-          <span class="owner">Felix Haffner</span>
-          <span class="delete">✕</span>
+          <span class="owner" id="detailClass">-</span>
+          <span class="delete" id="detailStored">-</span>
         </div>
 
-        <button class="share-btn">↗ Share Car</button>
+        <button class="share-btn" id="trunkBtn">↗ Open Trunk</button>
 
         <div class="stat">
           <div>
-            <strong>Fuelstatus</strong>
-            <small>Some short information</small>
+            <strong>Fuel</strong>
+            <small>ระดับน้ำมัน</small>
           </div>
-          <div class="bar"><span style="width: 88%"></span></div>
-          <em>150L</em>
-        </div>
-
-        <div class="stat">
-          <div>
-            <strong>Trunkspace</strong>
-            <small>Some short information</small>
-          </div>
-          <div class="bar blue"><span style="width: 62%"></span></div>
-          <em>150 /500</em>
+          <div class="bar blue"><span id="fuelBar" style="width: 0%"></span></div>
+          <em id="fuelValue">0%</em>
         </div>
 
         <div class="stat">
           <div>
-            <strong>Enginestatus</strong>
-            <small>Some short information</small>
+            <strong>Engine</strong>
+            <small>สภาพเครื่องยนต์</small>
           </div>
-          <div class="bar cyan"><span style="width: 64%"></span></div>
-          <em>64 %</em>
+          <div class="bar cyan"><span id="engineBar" style="width: 0%"></span></div>
+          <em id="engineValue">0%</em>
         </div>
 
         <div class="actions">
-          <button>✕ Repair Car</button>
-          <button>⛽ Fuel Car</button>
-          <button>➤ Drive Car</button>
+          <button id="renameBtn">✎ Rename Car</button>
+          <button id="sendBtn">↗ Send Vehicle</button>
+          <button id="spawnBtn">➤ Drive Car</button>
         </div>
       </section>
     </main>
