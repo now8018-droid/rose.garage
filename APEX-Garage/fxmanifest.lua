@@ -13,7 +13,6 @@ files {
 	'ui/main.js',
 	'ui/img/*.png',
 	'ui/*.ttf',
-	'ui/iconify-icon.min.js'
 }
 
 ui_page {
