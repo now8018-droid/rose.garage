@@ -15,6 +15,7 @@ let nowGarage = '';
 let isSpawnLoading = false;
 let activeSpawnPlate = '';
 let spawnProgressInterval = null;
+let spawnProgressRaf = null;
 
 // ============================================
 // HELPER FUNCTIONS
@@ -102,6 +103,10 @@ function setSpawnProgress(show, duration = 0, plate = '') {
         clearInterval(spawnProgressInterval);
         spawnProgressInterval = null;
     }
+    if (spawnProgressRaf) {
+        cancelAnimationFrame(spawnProgressRaf);
+        spawnProgressRaf = null;
+    }
 
     if (!show) {
         isSpawnLoading = false;
@@ -136,15 +141,18 @@ function setSpawnProgress(show, duration = 0, plate = '') {
     const start = Date.now();
     text.textContent = '0%';
 
-    spawnProgressInterval = setInterval(() => {
+    const updateProgress = () => {
         const elapsed = Date.now() - start;
         const progress = Math.min(100, Math.floor((elapsed / total) * 100));
         text.textContent = `${progress}%`;
         if (progress >= 100) {
-            clearInterval(spawnProgressInterval);
-            spawnProgressInterval = null;
+            spawnProgressRaf = null;
+            return;
         }
-    }, 50);
+        spawnProgressRaf = requestAnimationFrame(updateProgress);
+    };
+
+    spawnProgressRaf = requestAnimationFrame(updateProgress);
 }
 
 function updateVehicleCount(count) {
@@ -437,6 +445,8 @@ function syncVehicleData(eventData) {
     ` : '';
 
     
+    const cardHTMLList = [];
+
     // Process each vehicle
     for (const key in eventData.data) {
         allVehicle++;
@@ -576,8 +586,8 @@ function syncVehicleData(eventData) {
                 </div>
             </div>
         `;
-        
-        content.insertAdjacentHTML('beforeend', cardHTML);
+
+        cardHTMLList.push(cardHTML);
     }
     
     // Update vehicle count
@@ -596,13 +606,13 @@ function syncVehicleData(eventData) {
     // Add empty blocks for all view
     const emptyCount = Math.max(0, 5 - allVehicle);
     for (let i = 0; i < emptyCount; i++) {
-        content.insertAdjacentHTML('beforeend', emptyBlockHTML);
+        cardHTMLList.push(emptyBlockHTML);
     }
     
     // Add empty blocks for garage view
     const garageEmptyCount = Math.max(0, 5 - garageCount);
     for (let i = 0; i < garageEmptyCount; i++) {
-        content.insertAdjacentHTML('beforeend', 
+        cardHTMLList.push(
             emptyBlockHTML.replace('empty_block', 'empty_block garage').replace('style="order: 4"', 'style="order: 4; display: none;"')
         );
     }
@@ -610,10 +620,12 @@ function syncVehicleData(eventData) {
     // Add empty blocks for pound view
     const poundEmptyCount = Math.max(0, 5 - poundCount);
     for (let i = 0; i < poundEmptyCount; i++) {
-        content.insertAdjacentHTML('beforeend', 
+        cardHTMLList.push(
             emptyBlockHTML.replace('empty_block', 'empty_block pound').replace('style="order: 4"', 'style="order: 4; display: none;"')
         );
     }
+
+    content.innerHTML = cardHTMLList.join('');
     
     // Set pound status based on garage type
     if (nowGarage === 'garage') {

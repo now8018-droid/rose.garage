@@ -100,6 +100,8 @@
 body {
     overflow: hidden;
     background: transparent;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 /* Custom Scrollbar */
@@ -165,6 +167,7 @@ body {
     top: 50%;
     transform: translate(-50%, -50%);
     animation: fadeInUp 0.3s ease-out;
+    will-change: transform, opacity;
 }
 
 /* Background Effects */
@@ -220,6 +223,8 @@ body {
     background: rgba(14, 14, 14, 0.9);
     border: 1px solid var(--border-default);
     box-shadow: var(--shadow-lg);
+    transform: translateZ(0);
+    contain: content;
 }
 
 /* ============================================
@@ -531,6 +536,9 @@ body {
     overflow-x: hidden;
     padding: 0.4vh 0.6vh 0.4vh 0.4vh;
     gap: 0.8vh;
+    contain: layout paint;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 /* ============================================
@@ -567,6 +575,8 @@ body {
     animation: slideInUp 0.25s ease-out backwards;
     padding: 1vh;
     gap: 1.2vh;
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 .card-glow {
@@ -597,6 +607,7 @@ body {
 .car_box:nth-child(6) { animation-delay: 300ms; }
 .car_box:nth-child(7) { animation-delay: 360ms; }
 .car_box:nth-child(8) { animation-delay: 420ms; }
+.car_box:nth-child(n+9) { animation-delay: 0ms; }
 
 /* Vehicle Image */
 .car_left {
@@ -621,6 +632,8 @@ body {
     height: auto;
     opacity: 0.8;
     transition: opacity 0.2s ease, transform 0.2s ease;
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 .img-overlay {
@@ -892,6 +905,7 @@ body {
     border: none;
     transition: transform 0.15s ease, filter 0.15s ease;
     overflow: hidden;
+    will-change: transform, filter;
 }
 
 .button_spawn iconify-icon {
@@ -913,6 +927,21 @@ body {
 
 .button_spawn:active {
     transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .assist_garage,
+    .car_box,
+    .logo-pulse {
+        animation: none !important;
+    }
+
+    .car_box,
+    .button_spawn,
+    .car_img img,
+    .assist_favorite_btn {
+        transition: none !important;
+    }
 }
 
 /* ============================================
