@@ -210,6 +210,16 @@ local function isAnyPlayerInVehicle(vehicle)
     return false
 end
 
+local function setLocalVehicleStoredState(plate, stored)
+    for i, v in pairs(Mystored) do
+        if samePlate(v.plate, plate) then
+            Mystored[i].stored = stored == true
+            return true
+        end
+    end
+    return false
+end
+
 local function getVehicleImageConfig(model)
     if not Config.VehicleImageMap then return nil end
 
@@ -1246,6 +1256,7 @@ function SpawnVehicle(vehicle, plate, damage)
 		SetLocalPlayerAsGhost(false)
 	end)
     TriggerServerEvent(ResourceName..':setStateVehicle', plate, false)
+    setLocalVehicleStoredState(plate, false)
     CurrentPoint = nil 
 end
 
