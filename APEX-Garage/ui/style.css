@@ -100,8 +100,8 @@
 body {
     overflow: hidden;
     background: transparent;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: auto;
+    text-rendering: auto;
 }
 
 /* Custom Scrollbar */
@@ -223,7 +223,6 @@ body {
     background: rgba(14, 14, 14, 0.9);
     border: 1px solid var(--border-default);
     box-shadow: var(--shadow-lg);
-    transform: translateZ(0);
     contain: content;
 }
 
@@ -537,8 +536,6 @@ body {
     padding: 0.4vh 0.6vh 0.4vh 0.4vh;
     gap: 0.8vh;
     contain: layout paint;
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 /* ============================================
@@ -576,7 +573,6 @@ body {
     padding: 1vh;
     gap: 1.2vh;
     will-change: transform, opacity;
-    transform: translateZ(0);
 }
 
 .card-glow {
@@ -633,7 +629,6 @@ body {
     opacity: 0.8;
     transition: opacity 0.2s ease, transform 0.2s ease;
     will-change: transform, opacity;
-    transform: translateZ(0);
 }
 
 .img-overlay {
