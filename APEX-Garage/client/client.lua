@@ -188,8 +188,8 @@ end
 
 local function findVehicleByPlate(plate)
     for _, vehicle in pairs(ESX.Game.GetVehicles()) do
-        local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
-        if vehicleProps and samePlate(vehicleProps.plate, plate) then
+        local ok, vehicleProps = pcall(ESX.Game.GetVehicleProperties, vehicle)
+        if ok and vehicleProps and samePlate(vehicleProps.plate, plate) then
             return vehicle
         end
     end
@@ -1488,6 +1488,7 @@ RegisterNUICallback('sendvehicle', function(data,cb)
             ESX.TriggerServerCallback(ResourceName..':payMoney', function(hasEnoughMoney)
                 if hasEnoughMoney then
                     if not checkOwner(tableData.plate) then
+                        Config.notification('error', 'ไม่พบข้อมูลรถคันนี้ กรุณาลองใหม่')
                         cb('fail')
                         return
                     end
@@ -1502,6 +1503,7 @@ RegisterNUICallback('sendvehicle', function(data,cb)
                     dprint(("[garage] sendvehicle (pound->garage) -> %s"):format(tableData.plate))
                     cb('success')
                 else
+                    Config.notification('error', 'คุณไม่มีเงินพอที่จะจ่ายค่าพาวรถ')
                     cb('fail')
                 end
             end)
@@ -1509,6 +1511,7 @@ RegisterNUICallback('sendvehicle', function(data,cb)
             cb('fail')
         end 
     else 
+        Config.notification('error', 'ไม่พบข้อมูลรถคันนี้ กรุณาลองใหม่')
         cb('fail')
     end 
 end)
