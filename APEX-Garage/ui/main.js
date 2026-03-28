@@ -214,6 +214,10 @@ $('body').on('click', '.vehicle-detail2', function (e) {
 $('body').on('click', '.spawn', function (e) {
     e.stopPropagation();
     if (isSpawnLoading || !canClick) return;
+
+    if ($(this).hasClass('in_pound')) {
+        return;
+    }
     
     canClick = false;
     const plate = $(this).closest('.car_box').attr('data-plate');

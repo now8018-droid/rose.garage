@@ -910,6 +910,8 @@ body {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-subtle);
     color: var(--text-muted);
+    pointer-events: none;
+    cursor: not-allowed;
 }
 
 .button_spawn.in_pound span {
