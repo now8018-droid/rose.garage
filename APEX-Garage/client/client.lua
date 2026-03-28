@@ -704,27 +704,14 @@ end
 --     end 
 --     return false 
 -- end 
-getTableSpawn = function(plate,current_type) 
-    local stored = false
-    if (CurrentPoint == 'garage') then
-        stored = true 
-    end
-    for _ , v in pairs(Mystored) do 
-        if v.stored then
-            if v.deposit then
-                v.stored = false
-            end
+getTableSpawn = function(plate,current_type)
+    for _ , v in pairs(Mystored) do
+        if samePlate(v.plate, plate) then
+            return v
         end
-        if samePlate(v.plate, plate) and v.stored == stored then
-            if stored then
-                v.stored = not stored
-                dprint('set stored false for plate', plate)
-            end
-            return v 
-        end 
-    end 
-    return false 
-end 
+    end
+    return false
+end
 
 removeDeposit = function(plate)
     -- print('removeDeposit', plate)\
