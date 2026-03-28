@@ -72,6 +72,14 @@ function filterList() {
 function UICLOSE() {
     const garage = document.querySelector('.assist_garage');
     garage.style.display = 'none';
+
+    renameDisplay = false;
+    detailDisplay = false;
+    $('.display-input').hide();
+    $('.add-detail').hide();
+    $('.car-list').removeClass('active');
+    $('#name-input').val('');
+
     setSpawnProgress(false, 0, '');
 }
 
