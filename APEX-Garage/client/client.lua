@@ -112,18 +112,17 @@ end
 local ResourceName = GetCurrentResourceName()
 local WebhookLogCooldownMs = 2500
 local webhookLogLastAt = {}
+local WebhookAllowedActions = {
+    storevehicle = true,
+    garage_spawn = true,
+    garage_pound = true
+}
 
 local function sendDiscordLog(payload)
     if type(payload) ~= 'table' then return end
 
     local action = tostring(payload.action or payload.webhook or '')
-    local allowedActions = {
-        storevehicle = true,
-        garage_spawn = true,
-        garage_pound = true
-    }
-
-    if not allowedActions[action] then return end
+    if not WebhookAllowedActions[action] then return end
 
     local now = GetGameTimer()
     local nextAllowed = webhookLogLastAt[action] or 0
