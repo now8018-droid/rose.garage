@@ -426,7 +426,8 @@ function syncVehicleData(eventData) {
     let poundCount = 0;
     
     // Update title
-    document.getElementById('title-garage').textContent = nowGarage.toUpperCase();
+    const garageTitleMap = { garage: 'การาจ', pound: 'พาวน์', deposit: 'ที่ฝากรถ' };
+    document.getElementById('title-garage').textContent = garageTitleMap[nowGarage] || nowGarage.toUpperCase();
     
     // Build trunk button HTML
     const trunkHTML = nowGarage !== 'pound' ? `
@@ -448,7 +449,7 @@ function syncVehicleData(eventData) {
         let textNotAction = 'การาจ';
         
         if (nowGarage === 'garage') {
-            textNotAction = vehicle.deposit ? `จุดฝากรถ ${vehicle.deposit}` : 'พาวน์';
+            textNotAction = vehicle.deposit ? `ที่ฝากรถ ${vehicle.deposit}` : 'พาวน์';
         }
         
         // Determine vehicle status
@@ -468,7 +469,7 @@ function syncVehicleData(eventData) {
                 classMenu = 'garage';
                 garageCount++;
                 if (vehicle.deposit) {
-                    textNotAction = `DEPOSIT ${vehicle.deposit}`;
+                    textNotAction = `ที่ฝากรถ ${vehicle.deposit}`;
                 }
             } else {
                 poundCount++;
