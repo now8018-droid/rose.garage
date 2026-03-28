@@ -196,11 +196,18 @@ local function findVehicleByPlate(plate)
     return nil
 end
 
-local function isPlayerDrivingVehicle(vehicle)
+local function isAnyPlayerInVehicle(vehicle)
     if not vehicle or vehicle == 0 then return false end
 
-    local driverPed = GetPedInVehicleSeat(vehicle, -1)
-    return driverPed and driverPed ~= 0 and DoesEntityExist(driverPed) and not IsPedDeadOrDying(driverPed, true) and IsPedAPlayer(driverPed)
+    local maxPassengers = GetVehicleMaxNumberOfPassengers(vehicle)
+    for seat = -1, maxPassengers - 1 do
+        local ped = GetPedInVehicleSeat(vehicle, seat)
+        if ped and ped ~= 0 and DoesEntityExist(ped) and not IsPedDeadOrDying(ped, true) and IsPedAPlayer(ped) then
+            return true
+        end
+    end
+
+    return false
 end
 
 local function setLocalVehicleStoredState(plate, stored)
@@ -1355,7 +1362,7 @@ RegisterNUICallback('spawnvehicle', function(data,cb)
 
     if CurrentPoint == 'pound' then
         local worldVehicle = findVehicleByPlate(data.plate)
-        if worldVehicle and isPlayerDrivingVehicle(worldVehicle) then
+        if worldVehicle and isAnyPlayerInVehicle(worldVehicle) then
             dprint(("[garage] cannot pound vehicle %s: someone is in vehicle"):format(tostring(data.plate)))
             Config.notification('error', 'ไม่สามารถพาวน์ได้ เนื่องจากมีคนอยู่บนรถ')
             cb('fail')
@@ -1479,7 +1486,7 @@ RegisterNUICallback('sendvehicle', function(data,cb)
     if tableData then
         if CurrentPoint =='pound' then
             local worldVehicle = findVehicleByPlate(data.plate)
-            if worldVehicle and isPlayerDrivingVehicle(worldVehicle) then
+            if worldVehicle and isAnyPlayerInVehicle(worldVehicle) then
                 Config.notification('error', 'ไม่สามารถพาวน์ได้ เนื่องจากมีคนอยู่บนรถ')
                 cb('fail')
                 return
