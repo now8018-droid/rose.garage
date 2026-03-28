@@ -288,7 +288,11 @@ end)
 CreateThread(function()
     while true do
         cachedPlayerPed = PlayerPedId()
-        Wait(1000)
+        if openuigarage or isGarageSystemAwake then
+            Wait(800)
+        else
+            Wait(3000)
+        end
     end
 end)
 
@@ -571,7 +575,7 @@ CreateThread(function()
         local tickMs = TICK_MS
         if not isGarageSystemAwake then
             if next(spawnedProps) == nil then
-                Wait(3000)
+                Wait(5000)
                 goto CONTINUE_PROP_STREAM
             end
             tickMs = 2000
