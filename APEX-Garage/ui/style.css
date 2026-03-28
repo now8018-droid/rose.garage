@@ -1350,6 +1350,7 @@ body {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: clamp(6px, .36vw, 8px);
+    grid-auto-rows: 168px;
     overflow-y: auto;
     padding-right: clamp(5px, .4vw, 8px);
     padding-bottom: 6px;
@@ -1366,13 +1367,16 @@ body {
 }
 
 .car_box {
-    min-height: 170px;
+    height: 168px;
+    min-height: 168px;
     background: linear-gradient(180deg, rgba(12, 20, 32, .92), rgba(8, 15, 26, .95));
-    border: 1px solid rgba(108, 153, 196, .22);
+    border: 1px solid rgba(86, 129, 167, .3);
     border-radius: 9px;
     padding: 6px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
 }
 
 .car_box:hover {
@@ -1385,7 +1389,8 @@ body {
     margin-bottom: .25vh;
 }
 
-.card-top {
+.card-top,
+.card-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1399,15 +1404,15 @@ body {
 }
 
 .car_img {
-    height: 74px;
-    min-height: 74px;
+    height: 62px;
+    min-height: 62px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, .02);
+    background: rgba(255, 255, 255, .03);
 }
 
 .car_center {
     width: 100%;
-    margin-bottom: .25vh;
+    margin-bottom: .15vh;
 }
 
 .car_name h4 {
@@ -1418,12 +1423,13 @@ body {
 }
 
 .car_name h3 {
-    font-size: clamp(16px, .86vw, 18px);
+    font-size: clamp(14px, .9vw, 18px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     text-transform: uppercase;
     letter-spacing: .01em;
+    line-height: 1.1;
 }
 
 .car_tags {
@@ -1444,6 +1450,7 @@ body {
     display: flex;
     flex: 1;
     gap: .28vw;
+    align-items: center;
 }
 
 .button_trunk,
@@ -1456,13 +1463,20 @@ body {
     min-height: 24px;
     width: 100%;
     border-radius: 6px;
-    background: rgba(65, 79, 97, 0.35);
+    background: rgba(57, 70, 88, 0.45);
     border-color: rgba(167, 189, 213, 0.22);
+    justify-content: center;
+    gap: 4px;
+    padding: 0;
 }
 
 .button_spawn span {
     text-transform: lowercase;
     font-size: clamp(9px, .5vw, 10px);
+}
+
+.assist_content .button_spawn iconify-icon {
+    font-size: 11px;
 }
 
 .stat-label {
@@ -1487,6 +1501,14 @@ body {
 .assist_content .car_selected .button_spawn {
     background: linear-gradient(90deg, rgba(57, 187, 232, .85), rgba(37, 215, 248, .75));
     border-color: rgba(92, 237, 255, .75);
+}
+
+.assist_content .assist_favorite_btn {
+    width: 17px;
+    height: 17px;
+    min-width: 17px;
+    min-height: 17px;
+    border-radius: 4px;
 }
 
 .garage_detail {

@@ -585,13 +585,6 @@ function syncVehicleData(eventData) {
                     </div>
                 </div>
 
-                <div class="car_left">
-                    <div class="car_img">
-                        <img src="img/${vehicle.img}.png" alt="${vehicle.vehiclename}" onerror="this.src='img/unknow.png'">
-                        <div class="img-overlay"></div>
-                    </div>
-                </div>
-
                 <div class="car_center">
                     <div class="car_name">
                         <h4>${(vehicle.class || 'Super Sport')}</h4>
@@ -600,6 +593,13 @@ function syncVehicleData(eventData) {
                             <span class="tag plate">${vehicle.plate}</span>
                             <span class="tag class">${vehicle.class || 'UNKNOWN'}</span>
                         </div>
+                    </div>
+                </div>
+
+                <div class="car_left">
+                    <div class="car_img">
+                        <img src="img/${vehicle.img}.png" alt="${vehicle.vehiclename}" onerror="this.src='img/unknow.png'">
+                        <div class="img-overlay"></div>
                     </div>
                 </div>
 
