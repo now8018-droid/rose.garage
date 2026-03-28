@@ -100,6 +100,8 @@
 body {
     overflow: hidden;
     background: transparent;
+    -webkit-font-smoothing: auto;
+    text-rendering: auto;
 }
 
 /* Custom Scrollbar */
@@ -165,6 +167,7 @@ body {
     top: 50%;
     transform: translate(-50%, -50%);
     animation: fadeInUp 0.3s ease-out;
+    will-change: transform, opacity;
 }
 
 /* Background Effects */
@@ -220,6 +223,7 @@ body {
     background: rgba(14, 14, 14, 0.9);
     border: 1px solid var(--border-default);
     box-shadow: var(--shadow-lg);
+    contain: content;
 }
 
 /* ============================================
@@ -531,6 +535,7 @@ body {
     overflow-x: hidden;
     padding: 0.4vh 0.6vh 0.4vh 0.4vh;
     gap: 0.8vh;
+    contain: layout paint;
 }
 
 /* ============================================
@@ -559,14 +564,15 @@ body {
     align-items: center;
     width: 100%;
     min-height: 9vh;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(20, 20, 24, 0.92);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    /* border: 1px solid var(--border-subtle); */
+    border: 1px solid rgba(255, 255, 255, 0.08);
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     animation: slideInUp 0.25s ease-out backwards;
     padding: 1vh;
     gap: 1.2vh;
+    will-change: transform, opacity;
 }
 
 .card-glow {
@@ -579,8 +585,8 @@ body {
 }
 
 .car_box:hover {
-    background: #c5a3621f;
-    border-color: #c5a3624f;
+    background: rgba(37, 31, 20, 0.96);
+    border-color: rgba(197, 163, 98, 0.42);
     transform: translateY(-1px);
 }
 
@@ -597,6 +603,7 @@ body {
 .car_box:nth-child(6) { animation-delay: 300ms; }
 .car_box:nth-child(7) { animation-delay: 360ms; }
 .car_box:nth-child(8) { animation-delay: 420ms; }
+.car_box:nth-child(n+9) { animation-delay: 0ms; }
 
 /* Vehicle Image */
 .car_left {
@@ -619,8 +626,10 @@ body {
 .car_img img {
     width: 85%;
     height: auto;
-    opacity: 0.8;
+    opacity: 1;
     transition: opacity 0.2s ease, transform 0.2s ease;
+    will-change: transform, opacity;
+    image-rendering: auto;
 }
 
 .img-overlay {
@@ -713,7 +722,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 1.1vh;
-    color: var(--text-muted);
+    color: rgba(250, 250, 250, 0.78);
     width: 1.8vh;
     flex-shrink: 0;
 }
@@ -745,7 +754,7 @@ body {
     flex: 1;
     max-width: 8vh;
     height: 0.5vh;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
     overflow: hidden;
     opacity: 0.6;
@@ -769,7 +778,7 @@ body {
     font-size: 0.9vh;
     font-family: ChaKraCustom, Anuphan, sans-serif;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: rgba(250, 250, 250, 0.92);
     min-width: 2.5vh;
     text-align: right;
 }
@@ -892,6 +901,7 @@ body {
     border: none;
     transition: transform 0.15s ease, filter 0.15s ease;
     overflow: hidden;
+    will-change: transform, filter;
 }
 
 .button_spawn iconify-icon {
@@ -913,6 +923,21 @@ body {
 
 .button_spawn:active {
     transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .assist_garage,
+    .car_box,
+    .logo-pulse {
+        animation: none !important;
+    }
+
+    .car_box,
+    .button_spawn,
+    .car_img img,
+    .assist_favorite_btn {
+        transition: none !important;
+    }
 }
 
 /* ============================================
@@ -957,7 +982,7 @@ body {
 }
 
 .car_box.car_inpound {
-    opacity: 0.7;
+    opacity: 1;
 }
 
 /* ============================================
