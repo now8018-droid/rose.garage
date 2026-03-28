@@ -339,12 +339,19 @@ RegisterNetEvent(ResourceName..':logWebhook', function(payload)
     local src = source
     if not validateSource(src) then return end
     if type(payload) ~= 'table' then return end
-    if not enforceCooldown(src, 'logWebhook', 1000) then return end
+    if not enforceCooldown(src, 'logWebhook', 2500) then return end
 
     local tracked = trackPlayer(src)
     if not tracked then return end
 
     local action = tostring(payload.action or payload.webhook or '')
+    local allowedActions = {
+        storevehicle = true,
+        garage_spawn = true,
+        garage_pound = true
+    }
+    if not allowedActions[action] then return end
+
     local plate = tostring(payload.plate or '-')
     local durability = tonumber(payload.durability or 0) or 0
     local fuel = tonumber(payload.fuel or 0) or 0

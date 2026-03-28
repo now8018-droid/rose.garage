@@ -110,10 +110,34 @@ local function closeGarageUi(reason)
 end
 
 local ResourceName = GetCurrentResourceName()
+local WebhookLogCooldownMs = 2500
+local webhookLogLastAt = {}
 
 local function sendDiscordLog(payload)
     if type(payload) ~= 'table' then return end
-    TriggerServerEvent(ResourceName..':logWebhook', payload)
+
+    local action = tostring(payload.action or payload.webhook or '')
+    local allowedActions = {
+        storevehicle = true,
+        garage_spawn = true,
+        garage_pound = true
+    }
+
+    if not allowedActions[action] then return end
+
+    local now = GetGameTimer()
+    local nextAllowed = webhookLogLastAt[action] or 0
+    if now < nextAllowed then return end
+    webhookLogLastAt[action] = now + WebhookLogCooldownMs
+
+    local compactPayload = {
+        action = action,
+        plate = tostring(payload.plate or '-'),
+        durability = math.floor((tonumber(payload.durability or 0) or 0) * 10 + 0.5) / 10,
+        fuel = math.floor((tonumber(payload.fuel or 0) or 0) * 10 + 0.5) / 10
+    }
+
+    TriggerServerEvent(ResourceName..':logWebhook', compactPayload)
 end
 
 local function notifyError()
