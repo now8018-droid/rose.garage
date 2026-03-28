@@ -15,6 +15,10 @@ let nowGarage = '';
 let isSpawnLoading = false;
 let activeSpawnPlate = '';
 let spawnProgressInterval = null;
+let spawnProgressRaf = null;
+const SEARCH_DEBOUNCE_MS = 80;
+const PERFORMANCE_MODE_THRESHOLD = 120;
+let searchDebounceTimer = null;
 
 // ============================================
 // HELPER FUNCTIONS
@@ -48,7 +52,12 @@ if (window.sidebar) {
 // SEARCH FUNCTIONALITY
 // ============================================
 
-document.querySelector('#search').addEventListener('input', filterList);
+document.querySelector('#search').addEventListener('input', () => {
+    if (searchDebounceTimer) {
+        clearTimeout(searchDebounceTimer);
+    }
+    searchDebounceTimer = setTimeout(filterList, SEARCH_DEBOUNCE_MS);
+});
 
 function filterList() {
     const searchInput = document.querySelector("#search");
@@ -102,6 +111,10 @@ function setSpawnProgress(show, duration = 0, plate = '') {
         clearInterval(spawnProgressInterval);
         spawnProgressInterval = null;
     }
+    if (spawnProgressRaf) {
+        cancelAnimationFrame(spawnProgressRaf);
+        spawnProgressRaf = null;
+    }
 
     if (!show) {
         isSpawnLoading = false;
@@ -136,15 +149,17 @@ function setSpawnProgress(show, duration = 0, plate = '') {
     const start = Date.now();
     text.textContent = '0%';
 
-    spawnProgressInterval = setInterval(() => {
+    const tick = () => {
         const elapsed = Date.now() - start;
         const progress = Math.min(100, Math.floor((elapsed / total) * 100));
         text.textContent = `${progress}%`;
         if (progress >= 100) {
-            clearInterval(spawnProgressInterval);
-            spawnProgressInterval = null;
+            spawnProgressRaf = null;
+            return;
         }
-    }, 50);
+        spawnProgressRaf = requestAnimationFrame(tick);
+    };
+    spawnProgressRaf = requestAnimationFrame(tick);
 }
 
 function updateVehicleCount(count) {
@@ -414,7 +429,6 @@ window.addEventListener('message', function (event) {
 
 function syncVehicleData(eventData) {
     const content = document.querySelector('.assist_content');
-    content.innerHTML = '';
     
     // Reset categories
     $('.category').removeClass('select_category');
@@ -437,6 +451,9 @@ function syncVehicleData(eventData) {
     ` : '';
 
     
+    const vehicleCards = [];
+    const emptyBlocks = [];
+
     // Process each vehicle
     for (const key in eventData.data) {
         allVehicle++;
@@ -577,7 +594,7 @@ function syncVehicleData(eventData) {
             </div>
         `;
         
-        content.insertAdjacentHTML('beforeend', cardHTML);
+        vehicleCards.push(cardHTML);
     }
     
     // Update vehicle count
@@ -596,13 +613,13 @@ function syncVehicleData(eventData) {
     // Add empty blocks for all view
     const emptyCount = Math.max(0, 5 - allVehicle);
     for (let i = 0; i < emptyCount; i++) {
-        content.insertAdjacentHTML('beforeend', emptyBlockHTML);
+        emptyBlocks.push(emptyBlockHTML);
     }
     
     // Add empty blocks for garage view
     const garageEmptyCount = Math.max(0, 5 - garageCount);
     for (let i = 0; i < garageEmptyCount; i++) {
-        content.insertAdjacentHTML('beforeend', 
+        emptyBlocks.push(
             emptyBlockHTML.replace('empty_block', 'empty_block garage').replace('style="order: 4"', 'style="order: 4; display: none;"')
         );
     }
@@ -610,10 +627,13 @@ function syncVehicleData(eventData) {
     // Add empty blocks for pound view
     const poundEmptyCount = Math.max(0, 5 - poundCount);
     for (let i = 0; i < poundEmptyCount; i++) {
-        content.insertAdjacentHTML('beforeend', 
+        emptyBlocks.push(
             emptyBlockHTML.replace('empty_block', 'empty_block pound').replace('style="order: 4"', 'style="order: 4; display: none;"')
         );
     }
+
+    content.innerHTML = vehicleCards.join('') + emptyBlocks.join('');
+    document.body.classList.toggle('performance-mode', allVehicle >= PERFORMANCE_MODE_THRESHOLD);
     
     // Set pound status based on garage type
     if (nowGarage === 'garage') {

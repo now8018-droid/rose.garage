@@ -531,6 +531,7 @@ body {
     overflow-x: hidden;
     padding: 0.4vh 0.6vh 0.4vh 0.4vh;
     gap: 0.8vh;
+    contain: layout style paint;
 }
 
 /* ============================================
@@ -567,6 +568,9 @@ body {
     animation: slideInUp 0.25s ease-out backwards;
     padding: 1vh;
     gap: 1.2vh;
+    will-change: transform;
+    content-visibility: auto;
+    contain-intrinsic-size: 9vh;
 }
 
 .card-glow {
@@ -1197,6 +1201,43 @@ body {
 
 .garage-loading .assist_garage {
     pointer-events: none;
+}
+
+/* ============================================
+   PERFORMANCE MODE
+   ============================================ */
+body.performance-mode .assist_garage,
+body.performance-mode .car_box,
+body.performance-mode .button_spawn,
+body.performance-mode .button_trunk,
+body.performance-mode .button_rename,
+body.performance-mode .assist_favorite_btn {
+    transition-duration: 0.12s !important;
+}
+
+body.performance-mode .car_box {
+    animation: none !important;
+}
+
+body.performance-mode .logo-pulse,
+body.performance-mode .card-glow,
+body.performance-mode .img-overlay,
+body.performance-mode .glow-orb,
+body.performance-mode .grid-lines {
+    display: none !important;
+}
+
+body.performance-mode .car_box:hover {
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 
