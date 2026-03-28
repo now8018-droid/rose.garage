@@ -1,4 +1,4 @@
-export default {
+window.GarageSidebar = {
   name: 'GarageSidebar',
   props: {
     activeTab: { type: String, required: true },

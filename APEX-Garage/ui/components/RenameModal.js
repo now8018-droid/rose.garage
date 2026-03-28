@@ -1,4 +1,4 @@
-export default {
+window.RenameModal = {
   name: 'RenameModal',
   props: {
     show: { type: Boolean, required: true },

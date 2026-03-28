@@ -1,4 +1,4 @@
-export default {
+window.VehicleCard = {
   name: 'VehicleCard',
   props: {
     vehicle: { type: Object, required: true },
