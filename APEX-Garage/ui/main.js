@@ -490,6 +490,10 @@ function syncVehicleData(eventData) {
             </div>
         ` : '';
 
+        const inPoundOnGarage = nowGarage === 'garage' && classMenu === 'pound';
+        const spawnLabel = inPoundOnGarage ? 'รถคันนี้อยู่พาวน์' : 'เบิกยานพาหนะ';
+        const spawnClass = inPoundOnGarage ? 'in_pound' : '';
+
         // Calculate stat bar widths
         const engineWidth = Math.min(100, Math.max(0, engine));
         const fuelWidth = Math.min(100, Math.max(0, fuel));
@@ -568,9 +572,8 @@ function syncVehicleData(eventData) {
                     <div class="car_console">
                         ${trunkHTML}
                         ${renameHTML}
-                        <div class="button_spawn spawn">
-                            <iconify-icon icon="solar:play-circle-bold"></iconify-icon>
-                            <span>เบิกยานพาหนะ</span>
+                        <div class="button_spawn spawn ${spawnClass}">
+                            <span>${spawnLabel}</span>
                         </div>
                     </div>
                 </div>
