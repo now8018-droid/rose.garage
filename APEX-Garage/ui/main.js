@@ -577,14 +577,21 @@ function syncVehicleData(eventData) {
                         <p>ยานพาหนะนี้อยู่ใน ${textNotAction.toUpperCase()}</p>
                     </div>
                 </div>
-                
+
+                <div class="card-top">
+                    <div class="mini-class">${vehicle.class || 'SUPER SPORT'}</div>
+                    <div class="assist_favorite_btn fav-btn" data-plate-fav="${vehicle.plate}">
+                        <iconify-icon icon="solar:star-bold"></iconify-icon>
+                    </div>
+                </div>
+
                 <div class="car_left">
                     <div class="car_img">
                         <img src="img/${vehicle.img}.png" alt="${vehicle.vehiclename}" onerror="this.src='img/unknow.png'">
                         <div class="img-overlay"></div>
                     </div>
                 </div>
-                
+
                 <div class="car_center">
                     <div class="car_name">
                         <h3>${vehicle.vehiclename}</h3>
@@ -595,36 +602,29 @@ function syncVehicleData(eventData) {
                     </div>
                     <div class="car_health_list">
                         <div class="car_stat">
-                            <span class="stat-icon engine-icon">
-                                <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
-                            </span>
+                            <span class="stat-label">ENG</span>
                             <div class="stat-bar">
                                 <div class="stat-fill engine" style="width: ${engineWidth}%"></div>
                             </div>
-                            <span class="stat-value">${engine}</span>
+                            <span class="stat-value">${engine}%</span>
                         </div>
                         <div class="car_stat">
-                            <span class="stat-icon fuel-icon">
-                                <svg viewBox="0 0 24 24"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5z"/></svg>
-                            </span>
+                            <span class="stat-label">FUEL</span>
                             <div class="stat-bar">
                                 <div class="stat-fill fuel" style="width: ${fuelWidth}%"></div>
                             </div>
-                            <span class="stat-value">${fuel}</span>
+                            <span class="stat-value">${fuel}%</span>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="car_right">
-                    <div class="assist_favorite_btn fav-btn" data-plate-fav="${vehicle.plate}">
-                        <iconify-icon icon="solar:star-bold"></iconify-icon>
-                    </div>
                     <div class="car_console">
                         ${trunkHTML}
                         ${renameHTML}
                         <div class="button_spawn spawn">
                             <iconify-icon icon="solar:play-circle-bold"></iconify-icon>
-                            <span>เบิกยานพาหนะ</span>
+                            <span>select car</span>
                         </div>
                     </div>
                 </div>

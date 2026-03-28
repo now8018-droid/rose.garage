@@ -1300,6 +1300,44 @@ body {
     flex-direction: column;
 }
 
+.garage_toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .55vw .2vw .7vw;
+}
+
+.toolbar-brand {
+    color: #e7f5ff;
+    font-size: 1.25vw;
+    letter-spacing: .02em;
+}
+
+.toolbar-brand span {
+    color: rgba(220, 236, 255, .45);
+    font-size: .9vw;
+}
+
+.toolbar-actions {
+    display: flex;
+    gap: .35vw;
+}
+
+.toolbar-btn {
+    border: 1px solid rgba(147, 186, 224, .33);
+    background: rgba(13, 27, 44, .72);
+    color: #d6ebff;
+    border-radius: 8px;
+    min-height: 2.6vh;
+    padding: 0 .65vw;
+    font-size: .62vw;
+}
+
+.toolbar-btn.active {
+    background: rgba(239, 246, 255, .95);
+    color: #0e2137;
+}
+
 .section-label {
     margin-bottom: .8vh;
     justify-content: flex-start;
@@ -1315,7 +1353,7 @@ body {
 }
 
 .car_box {
-    min-height: 208px;
+    min-height: 245px;
     background: linear-gradient(180deg, rgba(15, 24, 38, .85), rgba(10, 16, 28, .9));
     border: 1px solid rgba(152, 203, 255, .18);
     border-radius: 12px;
@@ -1332,8 +1370,21 @@ body {
     margin-bottom: .45vh;
 }
 
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .3vh;
+}
+
+.mini-class {
+    font-size: .58vw;
+    color: #62dcff;
+    text-transform: uppercase;
+}
+
 .car_img {
-    height: 8.7vh;
+    height: 9.2vh;
     min-height: 82px;
     border-radius: 8px;
     background: rgba(255, 255, 255, .04);
@@ -1345,7 +1396,7 @@ body {
 }
 
 .car_name h3 {
-    font-size: .93vw;
+    font-size: .98vw;
 }
 
 .car_tags {
@@ -1374,8 +1425,19 @@ body {
 }
 
 .button_spawn {
-    height: 2.1vh;
-    min-height: 28px;
+    height: 2.5vh;
+    min-height: 30px;
+    width: 100%;
+}
+
+.button_spawn span {
+    text-transform: lowercase;
+}
+
+.stat-label {
+    width: 2.2vw;
+    color: rgba(210, 235, 255, .68);
+    font-size: .58vw;
 }
 
 .garage_detail {
@@ -1410,7 +1472,7 @@ body {
     border-radius: 12px;
     border: 1px solid rgba(130, 203, 255, .28);
     background: rgba(255, 255, 255, .03);
-    height: 25vh;
+    height: 26vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1491,7 +1553,7 @@ body {
 .detail-actions {
     margin-top: auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: .55vw;
 }
 
