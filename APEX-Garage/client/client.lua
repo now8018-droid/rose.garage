@@ -678,15 +678,14 @@ StoreVehicle_deposit = function (id_deposit)
     end)
 end
 
-checkOwner = function(plate,model)
+checkOwner = function(plate)
     for _ , v in pairs(Mystored) do
-        local vehiclemodel = json.decode(v.vehicle).model 
-        if samePlate(v.plate, plate) and (vehiclemodel == model or GetDisplayNameFromVehicleModel(model):lower() == vehiclemodel) then
-            v.stored = true 
-            return true 
-        end 
-    end 
-    return false 
+        if samePlate(v.plate, plate) then
+            v.stored = true
+            return true
+        end
+    end
+    return false
 end
 
 -- getTableSpawn = function(plate,current_type) 
@@ -1484,20 +1483,23 @@ RegisterNUICallback('sendvehicle', function(data,cb)
 
             ESX.TriggerServerCallback(ResourceName..':payMoney', function(hasEnoughMoney)
                 if hasEnoughMoney then
-                    cb('success')
-                    if checkOwner(tableData.plate,json.decode(tableData.vehicle).model) then
-                        TriggerServerEvent(ResourceName..':deletePoundVehicle', tableData.plate)
-                        TriggerServerEvent(ResourceName..':setStateVehicle', tableData.plate, true)
-                        local data_id = removeDeposit(data.plate)
-                        if data_id then  
-                            TriggerServerEvent(ResourceName..':removeDepositCar', tableData.plate, data_id)
-                        end
-                        ReloadVehicleData(CurrentPoint,CurrentType)
-                        dprint(("[garage] sendvehicle (pound->garage) -> %s"):format(tableData.plate))
+                    if not checkOwner(tableData.plate) then
+                        cb('fail')
+                        return
                     end
-                else 
+
+                    TriggerServerEvent(ResourceName..':deletePoundVehicle', tableData.plate)
+                    TriggerServerEvent(ResourceName..':setStateVehicle', tableData.plate, true)
+                    local data_id = removeDeposit(data.plate)
+                    if data_id then
+                        TriggerServerEvent(ResourceName..':removeDepositCar', tableData.plate, data_id)
+                    end
+                    ReloadVehicleData(CurrentPoint,CurrentType)
+                    dprint(("[garage] sendvehicle (pound->garage) -> %s"):format(tableData.plate))
+                    cb('success')
+                else
                     cb('fail')
-                end 
+                end
             end)
         else
             cb('fail')
