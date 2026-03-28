@@ -301,7 +301,7 @@ Citizen.CreateThread(function()
 
             Wait(0)
         else
-            Wait(250)
+            Wait(1000)
         end
     end
 end)
@@ -320,7 +320,7 @@ Citizen.CreateThread(function()
                 Wait(200)
             end
         else
-            Wait(500)
+            Wait(1200)
         end
     end
 end)
@@ -568,7 +568,16 @@ CreateThread(function()
     buildPropZonesFromConfig()
 
     while true do
-        Wait(TICK_MS)
+        local tickMs = TICK_MS
+        if not isGarageSystemAwake then
+            if next(spawnedProps) == nil then
+                Wait(3000)
+                goto CONTINUE_PROP_STREAM
+            end
+            tickMs = 2000
+        end
+
+        Wait(tickMs)
 
         cachedPlayerPed = PlayerPedId()
         local ped = cachedPlayerPed
@@ -588,6 +597,8 @@ CreateThread(function()
                 end
             end
         end
+
+        ::CONTINUE_PROP_STREAM::
     end
 end)
 
