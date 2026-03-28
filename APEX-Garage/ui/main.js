@@ -15,6 +15,7 @@ let nowGarage = '';
 let isSpawnLoading = false;
 let activeSpawnPlate = '';
 let spawnProgressInterval = null;
+let selectedVehiclePlate = '';
 
 // ============================================
 // HELPER FUNCTIONS
@@ -154,6 +155,43 @@ function updateVehicleCount(count) {
     }
 }
 
+function updateSelectedPanel(cardEl) {
+    if (!cardEl) return;
+
+    document.querySelectorAll('.car_box').forEach((card) => {
+        card.classList.remove('car_selected');
+    });
+    cardEl.classList.add('car_selected');
+
+    const name = cardEl.getAttribute('data-vehiclename') || 'Unknown Vehicle';
+    const plate = cardEl.getAttribute('data-plate') || '-';
+    const className = cardEl.querySelector('.tag.class')?.textContent?.trim() || '-';
+    const fuel = Number(cardEl.getAttribute('data-fuel') || 0);
+    const engine = Number(cardEl.getAttribute('data-engine') || 0);
+    const imageSrc = cardEl.querySelector('.car_img img')?.getAttribute('src') || './img/sultan2.png';
+
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    };
+
+    setText('selected-name', name);
+    setText('selected-plate', plate);
+    setText('selected-class', className);
+    setText('selected-fuel', `${Math.round(fuel)}%`);
+    setText('selected-engine', `${Math.round(engine)}%`);
+
+    const imageEl = document.getElementById('selected-image');
+    if (imageEl) imageEl.src = imageSrc;
+
+    const fuelBar = document.getElementById('selected-fuel-bar');
+    const engineBar = document.getElementById('selected-engine-bar');
+    if (fuelBar) fuelBar.style.width = `${Math.max(0, Math.min(100, fuel))}%`;
+    if (engineBar) engineBar.style.width = `${Math.max(0, Math.min(100, engine))}%`;
+
+    selectedVehiclePlate = plate;
+}
+
 // ============================================
 // EVENT LISTENERS - jQuery
 // ============================================
@@ -228,6 +266,10 @@ $('body').on('click', '.spawn', function (e) {
     setTimeout(() => { canClick = true; }, 400);
 });
 
+$('body').on('click', '.car_box[data-plate]', function () {
+    updateSelectedPanel(this);
+});
+
 // Edit/Rename
 $('body').on('click', '.edit', function () {
     if (renameDisplay || !canClick) return;
@@ -261,6 +303,18 @@ $('body').on('click', '.exit-area', function () {
             plate: $(this).attr('data-plate-spawn')
         }));
     }
+});
+
+$('body').on('click', '#panel-open-trunk', function () {
+    if (!selectedVehiclePlate || isSpawnLoading || !canClick) return;
+    const target = $(`.car_box[data-plate="${selectedVehiclePlate}"] .vehicle-detail2`).first();
+    if (target.length) target.trigger('click');
+});
+
+$('body').on('click', '#panel-spawn', function () {
+    if (!selectedVehiclePlate || isSpawnLoading || !canClick) return;
+    const target = $(`.car_box[data-plate="${selectedVehiclePlate}"] .spawn`).first();
+    if (target.length) target.trigger('click');
 });
 
 // Submit Rename
@@ -523,54 +577,39 @@ function syncVehicleData(eventData) {
                         <p>ยานพาหนะนี้อยู่ใน ${textNotAction.toUpperCase()}</p>
                     </div>
                 </div>
-                
+
+                <div class="card-top">
+                    <div class="mini-class">${vehicle.class || 'SUPER SPORT'}</div>
+                    <div class="assist_favorite_btn fav-btn" data-plate-fav="${vehicle.plate}">
+                        <iconify-icon icon="solar:star-bold"></iconify-icon>
+                    </div>
+                </div>
+
+                <div class="car_center">
+                    <div class="car_name">
+                        <h4>${(vehicle.class || 'Super Sport')}</h4>
+                        <h3>${vehicle.vehiclename}</h3>
+                        <div class="car_tags hidden-meta">
+                            <span class="tag plate">${vehicle.plate}</span>
+                            <span class="tag class">${vehicle.class || 'UNKNOWN'}</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="car_left">
                     <div class="car_img">
                         <img src="img/${vehicle.img}.png" alt="${vehicle.vehiclename}" onerror="this.src='img/unknow.png'">
                         <div class="img-overlay"></div>
                     </div>
                 </div>
-                
-                <div class="car_center">
-                    <div class="car_name">
-                        <h3>${vehicle.vehiclename}</h3>
-                        <div class="car_tags">
-                            <span class="tag plate">${vehicle.plate}</span>
-                            <span class="tag class">${vehicle.class || 'UNKNOWN'}</span>
-                        </div>
-                    </div>
-                    <div class="car_health_list">
-                        <div class="car_stat">
-                            <span class="stat-icon engine-icon">
-                                <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
-                            </span>
-                            <div class="stat-bar">
-                                <div class="stat-fill engine" style="width: ${engineWidth}%"></div>
-                            </div>
-                            <span class="stat-value">${engine}</span>
-                        </div>
-                        <div class="car_stat">
-                            <span class="stat-icon fuel-icon">
-                                <svg viewBox="0 0 24 24"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5z"/></svg>
-                            </span>
-                            <div class="stat-bar">
-                                <div class="stat-fill fuel" style="width: ${fuelWidth}%"></div>
-                            </div>
-                            <span class="stat-value">${fuel}</span>
-                        </div>
-                    </div>
-                </div>
-                
+
                 <div class="car_right">
-                    <div class="assist_favorite_btn fav-btn" data-plate-fav="${vehicle.plate}">
-                        <iconify-icon icon="solar:star-bold"></iconify-icon>
-                    </div>
                     <div class="car_console">
                         ${trunkHTML}
                         ${renameHTML}
                         <div class="button_spawn spawn">
                             <iconify-icon icon="solar:play-circle-bold"></iconify-icon>
-                            <span>เบิกยานพาหนะ</span>
+                            <span>select car</span>
                         </div>
                     </div>
                 </div>
@@ -622,6 +661,15 @@ function syncVehicleData(eventData) {
     } else {
         $('.car_box.pound').removeClass('car_inpound');
         $('.car_box.garage').addClass('car_inpound').css('order', '3');
+    }
+
+    const firstCard = document.querySelector('.car_box[data-plate]');
+    if (firstCard) {
+        updateSelectedPanel(firstCard);
+    } else {
+        selectedVehiclePlate = '';
+        const selectedName = document.getElementById('selected-name');
+        if (selectedName) selectedName.textContent = 'No Vehicle Selected';
     }
 }
 
