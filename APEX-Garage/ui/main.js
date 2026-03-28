@@ -15,6 +15,7 @@ let nowGarage = '';
 let isSpawnLoading = false;
 let activeSpawnPlate = '';
 let spawnProgressInterval = null;
+let selectedVehiclePlate = '';
 
 // ============================================
 // HELPER FUNCTIONS
@@ -154,6 +155,43 @@ function updateVehicleCount(count) {
     }
 }
 
+function updateSelectedPanel(cardEl) {
+    if (!cardEl) return;
+
+    document.querySelectorAll('.car_box').forEach((card) => {
+        card.classList.remove('car_selected');
+    });
+    cardEl.classList.add('car_selected');
+
+    const name = cardEl.getAttribute('data-vehiclename') || 'Unknown Vehicle';
+    const plate = cardEl.getAttribute('data-plate') || '-';
+    const className = cardEl.querySelector('.tag.class')?.textContent?.trim() || '-';
+    const fuel = Number(cardEl.getAttribute('data-fuel') || 0);
+    const engine = Number(cardEl.getAttribute('data-engine') || 0);
+    const imageSrc = cardEl.querySelector('.car_img img')?.getAttribute('src') || './img/sultan2.png';
+
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    };
+
+    setText('selected-name', name);
+    setText('selected-plate', plate);
+    setText('selected-class', className);
+    setText('selected-fuel', `${Math.round(fuel)}%`);
+    setText('selected-engine', `${Math.round(engine)}%`);
+
+    const imageEl = document.getElementById('selected-image');
+    if (imageEl) imageEl.src = imageSrc;
+
+    const fuelBar = document.getElementById('selected-fuel-bar');
+    const engineBar = document.getElementById('selected-engine-bar');
+    if (fuelBar) fuelBar.style.width = `${Math.max(0, Math.min(100, fuel))}%`;
+    if (engineBar) engineBar.style.width = `${Math.max(0, Math.min(100, engine))}%`;
+
+    selectedVehiclePlate = plate;
+}
+
 // ============================================
 // EVENT LISTENERS - jQuery
 // ============================================
@@ -228,6 +266,10 @@ $('body').on('click', '.spawn', function (e) {
     setTimeout(() => { canClick = true; }, 400);
 });
 
+$('body').on('click', '.car_box[data-plate]', function () {
+    updateSelectedPanel(this);
+});
+
 // Edit/Rename
 $('body').on('click', '.edit', function () {
     if (renameDisplay || !canClick) return;
@@ -261,6 +303,18 @@ $('body').on('click', '.exit-area', function () {
             plate: $(this).attr('data-plate-spawn')
         }));
     }
+});
+
+$('body').on('click', '#panel-open-trunk', function () {
+    if (!selectedVehiclePlate || isSpawnLoading || !canClick) return;
+    const target = $(`.car_box[data-plate="${selectedVehiclePlate}"] .vehicle-detail2`).first();
+    if (target.length) target.trigger('click');
+});
+
+$('body').on('click', '#panel-spawn', function () {
+    if (!selectedVehiclePlate || isSpawnLoading || !canClick) return;
+    const target = $(`.car_box[data-plate="${selectedVehiclePlate}"] .spawn`).first();
+    if (target.length) target.trigger('click');
 });
 
 // Submit Rename
@@ -622,6 +676,15 @@ function syncVehicleData(eventData) {
     } else {
         $('.car_box.pound').removeClass('car_inpound');
         $('.car_box.garage').addClass('car_inpound').css('order', '3');
+    }
+
+    const firstCard = document.querySelector('.car_box[data-plate]');
+    if (firstCard) {
+        updateSelectedPanel(firstCard);
+    } else {
+        selectedVehiclePlate = '';
+        const selectedName = document.getElementById('selected-name');
+        if (selectedName) selectedName.textContent = 'No Vehicle Selected';
     }
 }
 
