@@ -499,6 +499,12 @@ function syncVehicleData(eventData) {
             </div>
         ` : '';
 
+        const sendHTML = nowGarage === 'pound' ? `
+            <div class="button_spawn send" data-plate-send="${vehicle.plate}">
+                <span>ส่งเข้าการาจหลัก</span>
+            </div>
+        ` : '';
+
         const inPoundOnGarage = nowGarage === 'garage' && classMenu === 'pound';
         const spawnLabel = inPoundOnGarage ? 'รถคันนี้อยู่พาวน์' : 'เบิกยานพาหนะ';
         const spawnClass = inPoundOnGarage ? 'in_pound' : '';
@@ -581,6 +587,7 @@ function syncVehicleData(eventData) {
                     <div class="car_console">
                         ${trunkHTML}
                         ${renameHTML}
+                        ${sendHTML}
                         <div class="button_spawn spawn ${spawnClass}">
                             <span>${spawnLabel}</span>
                         </div>
