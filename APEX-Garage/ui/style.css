@@ -1350,11 +1350,13 @@ body {
 .assist_content {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: .45vw;
+    gap: .5vw;
     overflow-y: auto;
-    padding-right: .25vw;
+    padding-right: .45vw;
+    padding-bottom: .7vh;
     align-content: start;
-    max-height: 55vh;
+    max-height: 58vh;
+    border-right: 2px solid rgba(187, 151, 69, 0.55);
 }
 
 .garage_middle {
@@ -1365,11 +1367,13 @@ body {
 }
 
 .car_box {
-    min-height: 176px;
+    min-height: 22vh;
     background: linear-gradient(180deg, rgba(11, 21, 36, .88), rgba(5, 12, 24, .94));
     border: 1px solid rgba(94, 145, 196, .28);
     border-radius: 10px;
     padding: .42vw;
+    display: flex;
+    flex-direction: column;
 }
 
 .car_box:hover {
@@ -1379,7 +1383,7 @@ body {
 
 .car_left {
     width: 100%;
-    margin-bottom: .45vh;
+    margin-bottom: .25vh;
 }
 
 .card-top {
@@ -1396,10 +1400,10 @@ body {
 }
 
 .car_img {
-    height: 7.2vh;
-    min-height: 66px;
+    height: 8.6vh;
+    min-height: 76px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, .04);
+    background: rgba(255, 255, 255, .03);
 }
 
 .car_center {
@@ -1425,6 +1429,7 @@ body {
     justify-content: space-between;
     align-items: center;
     gap: .4vw;
+    margin-top: auto;
 }
 
 .car_console {
@@ -1435,13 +1440,12 @@ body {
 
 .button_trunk,
 .button_rename {
-    width: 1.45vw;
-    min-width: 25px;
+    display: none;
 }
 
 .button_spawn {
-    height: 2.3vh;
-    min-height: 26px;
+    height: 2.8vh;
+    min-height: 28px;
     width: 100%;
 }
 
@@ -1453,6 +1457,10 @@ body {
     width: 2.2vw;
     color: rgba(210, 235, 255, .68);
     font-size: .58vw;
+}
+
+.assist_content .car_health_list {
+    display: none;
 }
 
 .garage_detail {
