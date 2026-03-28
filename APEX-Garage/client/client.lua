@@ -186,6 +186,30 @@ local function samePlate(a, b)
     return normalizePlate(a) == normalizePlate(b)
 end
 
+local function findVehicleByPlate(plate)
+    for _, vehicle in pairs(ESX.Game.GetVehicles()) do
+        local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
+        if vehicleProps and samePlate(vehicleProps.plate, plate) then
+            return vehicle
+        end
+    end
+    return nil
+end
+
+local function isAnyPedInVehicle(vehicle)
+    if not vehicle or vehicle == 0 then return false end
+
+    local maxPassengers = GetVehicleMaxNumberOfPassengers(vehicle)
+    for seat = -1, maxPassengers - 1 do
+        local ped = GetPedInVehicleSeat(vehicle, seat)
+        if ped and ped ~= 0 and DoesEntityExist(ped) and not IsPedDeadOrDying(ped, true) then
+            return true
+        end
+    end
+
+    return false
+end
+
 local function getVehicleImageConfig(model)
     if not Config.VehicleImageMap then return nil end
 
@@ -1340,19 +1364,12 @@ RegisterNUICallback('spawnvehicle', function(data,cb)
     end
 
     if CurrentPoint == 'pound' then
-        for key, vehicle in pairs(ESX.Game.GetVehicles()) do
-            local vehicleProps  = ESX.Game.GetVehicleProperties(vehicle)
-            if vehicleProps.plate == data.plate then
-                local driverPed = GetPedInVehicleSeat(vehicle, -1)
-                if IsPedAPlayer(driverPed) then
-                    local driverId = NetworkGetPlayerIndexFromPed(driverPed)
-                    local serverId = GetPlayerServerId(driverId)
-                    dprint(("not remove player incar %s (Server ID: %s)"):format(data.plate, serverId))
-                    Config.notification('error',"There are players in your vehicle!")
-                    cb('fail')
-                    return
-                end
-            end
+        local worldVehicle = findVehicleByPlate(data.plate)
+        if worldVehicle and isAnyPedInVehicle(worldVehicle) then
+            dprint(("[garage] cannot pound vehicle %s: someone is in vehicle"):format(tostring(data.plate)))
+            Config.notification('error', 'ไม่สามารถพาวน์ได้ เนื่องจากมีคนอยู่บนรถ')
+            cb('fail')
+            return
         end
 
         delayCheck = true
@@ -1471,6 +1488,13 @@ RegisterNUICallback('sendvehicle', function(data,cb)
     local tableData = getTableSpawn(data.plate)
     if tableData then
         if CurrentPoint =='pound' then
+            local worldVehicle = findVehicleByPlate(data.plate)
+            if worldVehicle and isAnyPedInVehicle(worldVehicle) then
+                Config.notification('error', 'ไม่สามารถพาวน์ได้ เนื่องจากมีคนอยู่บนรถ')
+                cb('fail')
+                return
+            end
+
             ESX.TriggerServerCallback(ResourceName..':payMoney', function(hasEnoughMoney)
                 if hasEnoughMoney then
                     cb('success')
@@ -1479,7 +1503,7 @@ RegisterNUICallback('sendvehicle', function(data,cb)
                         TriggerServerEvent(ResourceName..':setStateVehicle', tableData.plate, true)
                         local data_id = removeDeposit(data.plate)
                         if data_id then  
-                            TriggerServerEvent(ResourceName..':removeDepositCar', tableData,data_id)
+                            TriggerServerEvent(ResourceName..':removeDepositCar', tableData.plate, data_id)
                         end
                         ReloadVehicleData(CurrentPoint,CurrentType)
                         dprint(("[garage] sendvehicle (pound->garage) -> %s"):format(tableData.plate))
@@ -1488,6 +1512,8 @@ RegisterNUICallback('sendvehicle', function(data,cb)
                     cb('fail')
                 end 
             end)
+        else
+            cb('fail')
         end 
     else 
         cb('fail')
