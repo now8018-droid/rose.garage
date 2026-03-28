@@ -72,6 +72,14 @@ function filterList() {
 function UICLOSE() {
     const garage = document.querySelector('.assist_garage');
     garage.style.display = 'none';
+
+    renameDisplay = false;
+    detailDisplay = false;
+    $('.display-input').hide();
+    $('.add-detail').hide();
+    $('.car-list').removeClass('active');
+    $('#name-input').val('');
+
     setSpawnProgress(false, 0, '');
 }
 
@@ -206,6 +214,10 @@ $('body').on('click', '.vehicle-detail2', function (e) {
 $('body').on('click', '.spawn', function (e) {
     e.stopPropagation();
     if (isSpawnLoading || !canClick) return;
+
+    if ($(this).hasClass('in_pound')) {
+        return;
+    }
     
     canClick = false;
     const plate = $(this).closest('.car_box').attr('data-plate');
@@ -426,7 +438,8 @@ function syncVehicleData(eventData) {
     let poundCount = 0;
     
     // Update title
-    document.getElementById('title-garage').textContent = nowGarage.toUpperCase();
+    const garageTitleMap = { garage: 'การาจ', pound: 'พาวน์', deposit: 'ที่ฝากรถ' };
+    document.getElementById('title-garage').textContent = garageTitleMap[nowGarage] || nowGarage.toUpperCase();
     
     // Build trunk button HTML
     const trunkHTML = nowGarage !== 'pound' ? `
@@ -439,7 +452,6 @@ function syncVehicleData(eventData) {
     
     // Process each vehicle
     for (const key in eventData.data) {
-        allVehicle++;
         const vehicle = eventData.data[key];
         
         let fuel = vehicle.fuel ? vehicle.fuel.toFixed(0) : 0;
@@ -448,7 +460,7 @@ function syncVehicleData(eventData) {
         let textNotAction = 'การาจ';
         
         if (nowGarage === 'garage') {
-            textNotAction = vehicle.deposit ? `จุดฝากรถ ${vehicle.deposit}` : 'พาวน์';
+            textNotAction = vehicle.deposit ? `ที่ฝากรถ ${vehicle.deposit}` : 'พาวน์';
         }
         
         // Determine vehicle status
@@ -468,13 +480,20 @@ function syncVehicleData(eventData) {
                 classMenu = 'garage';
                 garageCount++;
                 if (vehicle.deposit) {
-                    textNotAction = `DEPOSIT ${vehicle.deposit}`;
+                    textNotAction = `ที่ฝากรถ ${vehicle.deposit}`;
                 }
             } else {
                 poundCount++;
             }
         }
         
+        const isVehicleInMainGarage = classMenu === 'garage';
+        if (nowGarage === 'pound' && isVehicleInMainGarage) {
+            continue;
+        }
+
+        allVehicle++;
+
         // Check favorite status
         let nowFav = '';
         let order = 2;
@@ -489,6 +508,16 @@ function syncVehicleData(eventData) {
                 <span class="btn-tooltip">เปลี่ยนชื่อ</span>
             </div>
         ` : '';
+
+        const sendHTML = nowGarage === 'pound' ? `
+            <div class="button_spawn send" data-plate-send="${vehicle.plate}">
+                <span>ส่งเข้าการาจหลัก</span>
+            </div>
+        ` : '';
+
+        const inPoundOnGarage = nowGarage === 'garage' && classMenu === 'pound';
+        const spawnLabel = inPoundOnGarage ? 'รถคันนี้อยู่พาวน์' : 'เบิกยานพาหนะ';
+        const spawnClass = inPoundOnGarage ? 'in_pound' : '';
 
         // Calculate stat bar widths
         const engineWidth = Math.min(100, Math.max(0, engine));
@@ -568,9 +597,9 @@ function syncVehicleData(eventData) {
                     <div class="car_console">
                         ${trunkHTML}
                         ${renameHTML}
-                        <div class="button_spawn spawn">
-                            <iconify-icon icon="solar:play-circle-bold"></iconify-icon>
-                            <span>เบิกยานพาหนะ</span>
+                        ${sendHTML}
+                        <div class="button_spawn spawn ${spawnClass}">
+                            <span>${spawnLabel}</span>
                         </div>
                     </div>
                 </div>

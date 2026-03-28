@@ -55,7 +55,11 @@ CreateThread(function()
     while true do
         cachedDimension = getCurrentDimension()
         cachedWhitelistDimensions = getWhitelistDimensions()
-        Wait(500)
+        if isGarageSystemAwake then
+            Wait(700)
+        else
+            Wait(2500)
+        end
     end
 end)
 

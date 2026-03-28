@@ -110,10 +110,33 @@ local function closeGarageUi(reason)
 end
 
 local ResourceName = GetCurrentResourceName()
+local WebhookLogCooldownMs = 2500
+local webhookLogLastAt = {}
+local WebhookAllowedActions = {
+    storevehicle = true,
+    garage_spawn = true,
+    garage_pound = true
+}
 
 local function sendDiscordLog(payload)
     if type(payload) ~= 'table' then return end
-    TriggerServerEvent(ResourceName..':logWebhook', payload)
+
+    local action = tostring(payload.action or payload.webhook or '')
+    if not WebhookAllowedActions[action] then return end
+
+    local now = GetGameTimer()
+    local nextAllowed = webhookLogLastAt[action] or 0
+    if now < nextAllowed then return end
+    webhookLogLastAt[action] = now + WebhookLogCooldownMs
+
+    local compactPayload = {
+        action = action,
+        plate = tostring(payload.plate or '-'),
+        durability = math.floor((tonumber(payload.durability or 0) or 0) * 10 + 0.5) / 10,
+        fuel = math.floor((tonumber(payload.fuel or 0) or 0) * 10 + 0.5) / 10
+    }
+
+    TriggerServerEvent(ResourceName..':logWebhook', compactPayload)
 end
 
 local function notifyError()
@@ -186,6 +209,40 @@ local function samePlate(a, b)
     return normalizePlate(a) == normalizePlate(b)
 end
 
+local function findVehicleByPlate(plate)
+    for _, vehicle in pairs(ESX.Game.GetVehicles()) do
+        local ok, vehicleProps = pcall(ESX.Game.GetVehicleProperties, vehicle)
+        if ok and vehicleProps and samePlate(vehicleProps.plate, plate) then
+            return vehicle
+        end
+    end
+    return nil
+end
+
+local function isAnyPlayerInVehicle(vehicle)
+    if not vehicle or vehicle == 0 then return false end
+
+    local maxPassengers = GetVehicleMaxNumberOfPassengers(vehicle)
+    for seat = -1, maxPassengers - 1 do
+        local ped = GetPedInVehicleSeat(vehicle, seat)
+        if ped and ped ~= 0 and DoesEntityExist(ped) and not IsPedDeadOrDying(ped, true) and IsPedAPlayer(ped) then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function setLocalVehicleStoredState(plate, stored)
+    for i, v in pairs(Mystored) do
+        if samePlate(v.plate, plate) then
+            Mystored[i].stored = stored == true
+            return true
+        end
+    end
+    return false
+end
+
 local function getVehicleImageConfig(model)
     if not Config.VehicleImageMap then return nil end
 
@@ -231,7 +288,11 @@ end)
 CreateThread(function()
     while true do
         cachedPlayerPed = PlayerPedId()
-        Wait(1000)
+        if openuigarage or isGarageSystemAwake then
+            Wait(800)
+        else
+            Wait(3000)
+        end
     end
 end)
 
@@ -244,7 +305,7 @@ Citizen.CreateThread(function()
 
             Wait(0)
         else
-            Wait(250)
+            Wait(1000)
         end
     end
 end)
@@ -263,7 +324,7 @@ Citizen.CreateThread(function()
                 Wait(200)
             end
         else
-            Wait(500)
+            Wait(1200)
         end
     end
 end)
@@ -511,7 +572,16 @@ CreateThread(function()
     buildPropZonesFromConfig()
 
     while true do
-        Wait(TICK_MS)
+        local tickMs = TICK_MS
+        if not isGarageSystemAwake then
+            if next(spawnedProps) == nil then
+                Wait(5000)
+                goto CONTINUE_PROP_STREAM
+            end
+            tickMs = 2000
+        end
+
+        Wait(tickMs)
 
         cachedPlayerPed = PlayerPedId()
         local ped = cachedPlayerPed
@@ -531,6 +601,8 @@ CreateThread(function()
                 end
             end
         end
+
+        ::CONTINUE_PROP_STREAM::
     end
 end)
 
@@ -654,15 +726,14 @@ StoreVehicle_deposit = function (id_deposit)
     end)
 end
 
-checkOwner = function(plate,model)
+checkOwner = function(plate)
     for _ , v in pairs(Mystored) do
-        local vehiclemodel = json.decode(v.vehicle).model 
-        if samePlate(v.plate, plate) and (vehiclemodel == model or GetDisplayNameFromVehicleModel(model):lower() == vehiclemodel) then
-            v.stored = true 
-            return true 
-        end 
-    end 
-    return false 
+        if samePlate(v.plate, plate) then
+            v.stored = true
+            return true
+        end
+    end
+    return false
 end
 
 -- getTableSpawn = function(plate,current_type) 
@@ -680,27 +751,14 @@ end
 --     end 
 --     return false 
 -- end 
-getTableSpawn = function(plate,current_type) 
-    local stored = false
-    if (CurrentPoint == 'garage') then
-        stored = true 
-    end
-    for _ , v in pairs(Mystored) do 
-        if v.stored then
-            if v.deposit then
-                v.stored = false
-            end
+getTableSpawn = function(plate,current_type)
+    for _ , v in pairs(Mystored) do
+        if samePlate(v.plate, plate) then
+            return v
         end
-        if samePlate(v.plate, plate) and v.stored == stored then
-            if stored then
-                v.stored = not stored
-                dprint('set stored false for plate', plate)
-            end
-            return v 
-        end 
-    end 
-    return false 
-end 
+    end
+    return false
+end
 
 removeDeposit = function(plate)
     -- print('removeDeposit', plate)\
@@ -1236,6 +1294,7 @@ function SpawnVehicle(vehicle, plate, damage)
 		SetLocalPlayerAsGhost(false)
 	end)
     TriggerServerEvent(ResourceName..':setStateVehicle', plate, false)
+    setLocalVehicleStoredState(plate, false)
     CurrentPoint = nil 
 end
 
@@ -1340,19 +1399,12 @@ RegisterNUICallback('spawnvehicle', function(data,cb)
     end
 
     if CurrentPoint == 'pound' then
-        for key, vehicle in pairs(ESX.Game.GetVehicles()) do
-            local vehicleProps  = ESX.Game.GetVehicleProperties(vehicle)
-            if vehicleProps.plate == data.plate then
-                local driverPed = GetPedInVehicleSeat(vehicle, -1)
-                if IsPedAPlayer(driverPed) then
-                    local driverId = NetworkGetPlayerIndexFromPed(driverPed)
-                    local serverId = GetPlayerServerId(driverId)
-                    dprint(("not remove player incar %s (Server ID: %s)"):format(data.plate, serverId))
-                    Config.notification('error',"There are players in your vehicle!")
-                    cb('fail')
-                    return
-                end
-            end
+        local worldVehicle = findVehicleByPlate(data.plate)
+        if worldVehicle and isAnyPlayerInVehicle(worldVehicle) then
+            dprint(("[garage] cannot pound vehicle %s: someone is in vehicle"):format(tostring(data.plate)))
+            Config.notification('error', 'ไม่สามารถพาวน์ได้ เนื่องจากมีคนอยู่บนรถ')
+            cb('fail')
+            return
         end
 
         delayCheck = true
@@ -1471,25 +1523,40 @@ RegisterNUICallback('sendvehicle', function(data,cb)
     local tableData = getTableSpawn(data.plate)
     if tableData then
         if CurrentPoint =='pound' then
+            local worldVehicle = findVehicleByPlate(data.plate)
+            if worldVehicle and isAnyPlayerInVehicle(worldVehicle) then
+                Config.notification('error', 'ไม่สามารถพาวน์ได้ เนื่องจากมีคนอยู่บนรถ')
+                cb('fail')
+                return
+            end
+
             ESX.TriggerServerCallback(ResourceName..':payMoney', function(hasEnoughMoney)
                 if hasEnoughMoney then
-                    cb('success')
-                    if checkOwner(tableData.plate,json.decode(tableData.vehicle).model) then
-                        TriggerServerEvent(ResourceName..':deletePoundVehicle', tableData.plate)
-                        TriggerServerEvent(ResourceName..':setStateVehicle', tableData.plate, true)
-                        local data_id = removeDeposit(data.plate)
-                        if data_id then  
-                            TriggerServerEvent(ResourceName..':removeDepositCar', tableData,data_id)
-                        end
-                        ReloadVehicleData(CurrentPoint,CurrentType)
-                        dprint(("[garage] sendvehicle (pound->garage) -> %s"):format(tableData.plate))
+                    if not checkOwner(tableData.plate) then
+                        Config.notification('error', 'ไม่พบข้อมูลรถคันนี้ กรุณาลองใหม่')
+                        cb('fail')
+                        return
                     end
-                else 
+
+                    TriggerServerEvent(ResourceName..':deletePoundVehicle', tableData.plate)
+                    TriggerServerEvent(ResourceName..':setStateVehicle', tableData.plate, true)
+                    local data_id = removeDeposit(data.plate)
+                    if data_id then
+                        TriggerServerEvent(ResourceName..':removeDepositCar', tableData.plate, data_id)
+                    end
+                    ReloadVehicleData(CurrentPoint,CurrentType)
+                    dprint(("[garage] sendvehicle (pound->garage) -> %s"):format(tableData.plate))
+                    cb('success')
+                else
+                    Config.notification('error', 'คุณไม่มีเงินพอที่จะจ่ายค่าพาวรถ')
                     cb('fail')
-                end 
+                end
             end)
+        else
+            cb('fail')
         end 
     else 
+        Config.notification('error', 'ไม่พบข้อมูลรถคันนี้ กรุณาลองใหม่')
         cb('fail')
     end 
 end)

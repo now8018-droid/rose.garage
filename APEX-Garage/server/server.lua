@@ -335,27 +335,35 @@ local function sendWebhook(url, title, description, color)
     })
 end
 
+local LogWebhookAllowedActions = {
+    storevehicle = true,
+    garage_spawn = true,
+    garage_pound = true
+}
+
+local LogWebhookTitleMap = {
+    storevehicle = 'เก็บรถ',
+    garage_spawn = 'เบิกรถ',
+    garage_pound = 'พาวน์รถ'
+}
+
 RegisterNetEvent(ResourceName..':logWebhook', function(payload)
     local src = source
     if not validateSource(src) then return end
     if type(payload) ~= 'table' then return end
-    if not enforceCooldown(src, 'logWebhook', 1000) then return end
+    if not enforceCooldown(src, 'logWebhook', 2500) then return end
 
     local tracked = trackPlayer(src)
     if not tracked then return end
 
     local action = tostring(payload.action or payload.webhook or '')
+    if not LogWebhookAllowedActions[action] then return end
+
     local plate = tostring(payload.plate or '-')
     local durability = tonumber(payload.durability or 0) or 0
     local fuel = tonumber(payload.fuel or 0) or 0
 
-    local titleMap = {
-        storevehicle = 'เก็บรถ',
-        garage_spawn = 'เบิกรถ',
-        garage_pound = 'พาวน์รถ'
-    }
-
-    local title = titleMap[action] or 'Garage Log'
+    local title = LogWebhookTitleMap[action] or 'Garage Log'
     local desc = ('ชื่อเจ้าของรถ: %s\nทะเบียน: %s\nความคงทนรถ: %.1f\nน้ำมัน: %.1f')
         :format(tracked.name or ('ID '..tostring(src)), plate, durability, fuel)
 

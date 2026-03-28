@@ -905,6 +905,25 @@ body {
     transform: scale(0.98);
 }
 
+
+.button_spawn.in_pound {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.button_spawn.in_pound span {
+    color: var(--text-muted);
+}
+
+.button_spawn.in_pound:hover {
+    border-color: #c59ccd2e;
+    background: #ffafee1f;
+    filter: none;
+}
+
 /* ============================================
    POUND OVERLAY
    ============================================ */
