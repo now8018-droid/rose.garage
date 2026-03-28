@@ -448,7 +448,6 @@ function syncVehicleData(eventData) {
     
     // Process each vehicle
     for (const key in eventData.data) {
-        allVehicle++;
         const vehicle = eventData.data[key];
         
         let fuel = vehicle.fuel ? vehicle.fuel.toFixed(0) : 0;
@@ -484,6 +483,13 @@ function syncVehicleData(eventData) {
             }
         }
         
+        const isVehicleInMainGarage = classMenu === 'garage';
+        if (nowGarage === 'pound' && isVehicleInMainGarage) {
+            continue;
+        }
+
+        allVehicle++;
+
         // Check favorite status
         let nowFav = '';
         let order = 2;
