@@ -1350,13 +1350,13 @@ body {
 .assist_content {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: .5vw;
+    gap: .42vw;
     overflow-y: auto;
     padding-right: .45vw;
     padding-bottom: .7vh;
     align-content: start;
     max-height: 58vh;
-    border-right: 2px solid rgba(187, 151, 69, 0.55);
+    border-right: 1px solid rgba(125, 169, 209, 0.35);
 }
 
 .garage_middle {
@@ -1367,11 +1367,11 @@ body {
 }
 
 .car_box {
-    min-height: 22vh;
-    background: linear-gradient(180deg, rgba(11, 21, 36, .88), rgba(5, 12, 24, .94));
-    border: 1px solid rgba(94, 145, 196, .28);
-    border-radius: 10px;
-    padding: .42vw;
+    min-height: 17.2vh;
+    background: linear-gradient(180deg, rgba(12, 20, 32, .92), rgba(8, 15, 26, .95));
+    border: 1px solid rgba(108, 153, 196, .22);
+    border-radius: 9px;
+    padding: .36vw;
     display: flex;
     flex-direction: column;
 }
@@ -1390,32 +1390,41 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: .3vh;
+    margin-bottom: .2vh;
 }
 
 .mini-class {
-    font-size: .58vw;
+    font-size: .55vw;
     color: #62dcff;
     text-transform: uppercase;
 }
 
 .car_img {
-    height: 8.6vh;
-    min-height: 76px;
+    height: 6.4vh;
+    min-height: 58px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, .03);
+    background: rgba(255, 255, 255, .02);
 }
 
 .car_center {
     width: 100%;
-    margin-bottom: .4vh;
+    margin-bottom: .25vh;
+}
+
+.car_name h4 {
+    font-size: .52vw;
+    color: #46d9ff;
+    font-weight: 500;
+    margin-bottom: .1vh;
 }
 
 .car_name h3 {
-    font-size: .74vw;
+    font-size: .93vw;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: uppercase;
+    letter-spacing: .01em;
 }
 
 .car_tags {
@@ -1444,13 +1453,17 @@ body {
 }
 
 .button_spawn {
-    height: 2.8vh;
-    min-height: 28px;
+    height: 1.9vh;
+    min-height: 22px;
     width: 100%;
+    border-radius: 6px;
+    background: rgba(65, 79, 97, 0.35);
+    border-color: rgba(167, 189, 213, 0.22);
 }
 
 .button_spawn span {
     text-transform: lowercase;
+    font-size: .55vw;
 }
 
 .stat-label {
@@ -1461,6 +1474,20 @@ body {
 
 .assist_content .car_health_list {
     display: none;
+}
+
+.assist_content .hidden-meta {
+    display: none;
+}
+
+.assist_content .car_selected {
+    border-color: rgba(62, 214, 255, .7);
+    box-shadow: 0 0 18px rgba(23, 188, 255, .2);
+}
+
+.assist_content .car_selected .button_spawn {
+    background: linear-gradient(90deg, rgba(57, 187, 232, .85), rgba(37, 215, 248, .75));
+    border-color: rgba(92, 237, 255, .75);
 }
 
 .garage_detail {

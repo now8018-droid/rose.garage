@@ -594,26 +594,11 @@ function syncVehicleData(eventData) {
 
                 <div class="car_center">
                     <div class="car_name">
+                        <h4>${(vehicle.class || 'Super Sport')}</h4>
                         <h3>${vehicle.vehiclename}</h3>
-                        <div class="car_tags">
+                        <div class="car_tags hidden-meta">
                             <span class="tag plate">${vehicle.plate}</span>
                             <span class="tag class">${vehicle.class || 'UNKNOWN'}</span>
-                        </div>
-                    </div>
-                    <div class="car_health_list">
-                        <div class="car_stat">
-                            <span class="stat-label">ENG</span>
-                            <div class="stat-bar">
-                                <div class="stat-fill engine" style="width: ${engineWidth}%"></div>
-                            </div>
-                            <span class="stat-value">${engine}%</span>
-                        </div>
-                        <div class="car_stat">
-                            <span class="stat-label">FUEL</span>
-                            <div class="stat-bar">
-                                <div class="stat-fill fuel" style="width: ${fuelWidth}%"></div>
-                            </div>
-                            <span class="stat-value">${fuel}%</span>
                         </div>
                     </div>
                 </div>
