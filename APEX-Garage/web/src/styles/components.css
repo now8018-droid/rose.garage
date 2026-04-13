@@ -1,0 +1,99 @@
+.garage-root {
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+}
+
+.garage-panel {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 11, 15, 0.92);
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.55);
+  padding: 16px;
+}
+
+.topbar {
+  height: 64px;
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.brand-block{display:flex;flex-direction:column;line-height:1;}
+.brand-accent{font-size:27px;color:#f08314;letter-spacing:.8px;}
+.brand-title{font-size:35px;font-weight:700;}
+.helper-copy{font-size:12px;color:rgba(255,255,255,.55);max-width:500px;}
+
+.topbar-controls {display:flex;align-items:center;gap:8px;}
+.search-box {
+  width: 280px;height: 38px;display:flex;align-items:center;gap:8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(9,11,15,0.9);border-radius: 6px;padding: 0 10px;
+}
+.search-box svg{fill:#8c96a8;width:16px;height:16px;}
+.search-box input{flex:1;background:none;border:0;outline:0;color:#e7e9ef;font-size:13px;}
+.icon-btn{width:33px;height:33px;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:#141821;color:#fff;}
+.icon-btn.amber{background:linear-gradient(180deg,#f59127,#c55f12);}
+.icon-btn.close{background:linear-gradient(180deg,#f55050,#b61f1f);}
+
+.garage-content {display:grid;grid-template-columns: 1fr 300px;gap:14px;height:calc(100% - 78px);}
+
+.car-list {
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(130px, 1fr));
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.car-card {
+  background: linear-gradient(180deg, rgba(32, 35, 45, .75), rgba(13, 14, 19, .95));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  min-height: 170px;
+  padding: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255, 118, 0, 0.1);
+}
+.car-card.active {box-shadow: inset 0 0 0 1px rgba(255, 136, 0, .7), 0 0 20px rgba(255,136,0,.2);}
+.car-card-header{display:flex;justify-content:space-between;align-items:flex-start;}
+.car-card-header small{font-size:10px;color:rgba(255,255,255,.45);}
+.car-card-header h4{font-size:15px;line-height:1.1;}
+.star-btn{width:18px;height:18px;border-radius:4px;border:0;background:#fff;color:#111;font-size:11px;}
+.car-thumb{width:100%;height:84px;object-fit:contain;margin:4px 0 8px;}
+.select-btn {
+  width: 100%;height: 30px;border-radius: 4px;border: 1px solid rgba(255,130,0,.4);
+  color:#fff;background:linear-gradient(180deg,#181a21 0%, #13151b 100%);font-size:17px;
+}
+.car-card.active .select-btn {background:linear-gradient(180deg,#f28d20,#bf5a0f);}
+
+.detail-panel {
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: linear-gradient(180deg, rgba(16,18,23,.9), rgba(9,10,15,.95));
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.detail-header small{font-size:10px;color:rgba(255,255,255,.45);} 
+.detail-header h3{font-size:24px;line-height:1.15;}
+.detail-image{width:100%;height:170px;object-fit:contain;margin:10px 0 14px;}
+.plate-pill{align-self:center;background:#f7f8fb;color:#1d2028;padding:6px 18px;border-radius:4px;font-weight:700;margin-bottom:14px;}
+
+.fuel-row{display:flex;align-items:center;gap:14px;border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:8px 10px;margin-bottom:10px;}
+.fuel-copy small{font-size:11px;color:rgba(255,255,255,.6);} 
+.fuel-copy strong{display:block;font-size:15px;}
+.fuel-bar{flex:1;height:10px;background:#1d222c;border-radius:12px;overflow:hidden;}
+.fuel-bar span{display:block;height:100%;background:linear-gradient(90deg,#65ff6d,#bbff43);}
+
+.stats-section{display:flex;flex-direction:column;gap:8px;}
+.stat-row{display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:8px 10px;}
+.stat-icon{width:26px;height:26px;background:#f08314;color:#111;border-radius:50%;display:grid;place-items:center;font-size:12px;}
+.stat-copy small{font-size:11px;color:rgba(255,255,255,.45);display:block;}
+.stat-copy strong{font-size:16px;}
+
+.action-buttons{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:12px;}
+.action-buttons button{height:34px;border-radius:4px;border:1px solid rgba(255,130,0,.35);background:linear-gradient(180deg,#161921,#12141b);color:#fff;font-size:14px;}
+.action-buttons .drive{grid-column:1/-1;background:linear-gradient(180deg,#1d1f28,#111318);}
